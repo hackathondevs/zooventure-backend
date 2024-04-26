@@ -25,7 +25,7 @@ INSERT INTO Users (
 )
 VALUE (
     "otter.whopper@gmail.com", 
-    "12345678", 
+    "$2a$10$clEPEcPO7s5TnfJdgd0FxuNW8oofo.s/uEExeSP7ZYfU7jvhuSRN2", 
     "Otter Whopper",
     TRUE,
     TRUE,

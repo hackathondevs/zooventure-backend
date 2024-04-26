@@ -134,7 +134,12 @@ func (u *authUsecase) LogUserIn(ctx context.Context, attempt model.UserLoginRequ
 	token.SetIssuer(os.Getenv("APP_HOST"))
 	token.SetSubject(fmt.Sprint(user.ID))
 	token.SetString("name", user.Name)
-	ttl, err := strconv.Atoi(os.Getenv("PASETO_TTL"))
+	var ttl int
+	if attempt.RememberMe {
+		ttl, err = strconv.Atoi(os.Getenv("PASETO_TTL"))
+	} else {
+		ttl, err = strconv.Atoi(os.Getenv("LL_PASETO_TTL"))
+	}
 	if err != nil {
 		return "", err
 	}
