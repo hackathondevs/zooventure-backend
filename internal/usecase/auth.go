@@ -98,7 +98,7 @@ func (u *authUsecase) RegisterUser(ctx context.Context, userReq model.UserSignup
 
 	emailProps := map[string]string{
 		"AppName": os.Getenv("APP_NAME"),
-		"URL":     fmt.Sprintf("%s/verify-email?t=%d.%s", os.Getenv("WEB_DOMAIN"), verifID, verif.Token),
+		"URL":     fmt.Sprintf("%s/api/users/_verify?s=%d&t=%s", os.Getenv("APP_HOST"), verifID, verif.Token),
 		"Expiry":  os.Getenv("MFA_EMAIL_TTL"),
 	}
 	if err := u.mailer.SendMail(user.Email, "Account Verification", email.VerificationView, emailProps); err != nil {

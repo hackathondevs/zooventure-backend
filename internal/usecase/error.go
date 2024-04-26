@@ -3,11 +3,11 @@ package usecase
 import "errors"
 
 var (
-	ErrUserNotActive        = errors.New("El usuario no está activo/activa")
-	ErrUserNotExist         = errors.New("El/La usuario no existe")
-	ErrWrongPassword        = errors.New("La contraseña es incorrecta")
-	ErrVerificationNotExist = errors.New("el intento de verificación no existe")
-	ErrEmailExist           = errors.New("Ya existe el correo electrónico")
-	ErrNameExist            = errors.New("Nombre ya existe")
-	ErrIDNotNumeric         = errors.New("El valor de identificación no es válido")
+	ErrUserNotActive        = errors.New("User is not active")
+	ErrUserNotExist         = errors.New("User is not exist")
+	ErrWrongPassword        = errors.New("Wrong user password")
+	ErrVerificationNotExist = errors.New("Verification not exist")
+	ErrEmailExist           = errors.New("Email already exist")
+	ErrNameExist            = errors.New("Name already exist")
+	ErrIDNotNumeric         = errors.New("ID is not numeric")
 )
