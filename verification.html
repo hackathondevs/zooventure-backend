@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <p>Welcome to {{.AppName}}</p>
+
+    <p>
+        Please click on the link below to verify your email address. This is required to confirm ownership of the email
+        address.
+    </p>
+
+    <p><a href="{{.URL}}">Verify your email address</a></p>
+
+    <p>
+        If you're having trouble, try copying and pasting the following URL into your browser:
+        <br>
+        <a href="{{.URL}}">{{.URL}}</a>
+    </p>
+
+    <p>This link is valid for {{.Expiry}} minutes only. If it has expired, log in to our client area to request a new
+        link.</p>
+
+    <p>
+        ---
+        <br>
+        {{.AppName}}
+    </p>
+</body>
+
+</html>
