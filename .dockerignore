@@ -1,0 +1,13 @@
+.git
+.github
+api
+db
+docs
+test
+
+.air.toml
+*.example
+.envrc
+.gitignore
+flake.*
+Makefile
