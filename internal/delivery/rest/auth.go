@@ -22,7 +22,7 @@ func RegisterAuthHandler(
 	router = router.Group("/users")
 	router.Post("", authHandler.signUp)
 	router.Post("/_login", authHandler.login)
-	router.Post("/_verify", authHandler.verify)
+	router.Get("/_verify", authHandler.verify)
 }
 
 func (h *authHandler) signUp(c *fiber.Ctx) error {
@@ -43,11 +43,7 @@ func (h *authHandler) signUp(c *fiber.Ctx) error {
 }
 
 func (h *authHandler) verify(c *fiber.Ctx) error {
-	var verifReq model.UserVerifRequest
-	if err := c.BodyParser(&verifReq); err != nil {
-		return response.NewError(fiber.StatusBadRequest, ErrRequestMalformed)
-	}
-
+	verifReq := model.UserVerifRequest{ID: c.Query("s"), Token: c.Query("t")}
 	if err := h.validator.Struct(&verifReq); err != nil {
 		return err
 	}
