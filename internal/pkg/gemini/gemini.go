@@ -46,7 +46,7 @@ type AnimalPredictResp struct {
 
 func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) any {
 	resp, err := g.model.GenerateContent(ctx,
-		genai.Text("can you describe this image based and show with format json that i perform"),
+		genai.Text("can you describe this image based and show with format json that i perform and if the image is not animal please fill the json with not animal"),
 		genai.Text("the json using this format:"),
 		genai.Text("{"),
 		genai.Text("name : string,"),
@@ -57,7 +57,7 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 		genai.Text("lifespan : string,"),
 		genai.Text("funfact : string (fun fact about the animal),"),
 		genai.Text("}"),
-		genai.Text("if the image not animal and not have any animal in the image please just return not animal string"),
+		genai.Text("if the image not animal and not have any animal in the image please just fill the json with not animal"),
 		genai.Text("Please provide the response as json format (inside json)"),
 		genai.ImageData("jpeg", data),
 	)
