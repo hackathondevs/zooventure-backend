@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |-
             cd ${{ secrets.SERVER_DIR }}
-            make stage
+            make prod
 
       - name: ✅ Update Deployment Status
         uses: bobheadxi/deployments@v1

@@ -26,12 +26,12 @@ build:
 # ==================================================================================== #
 
 ## stage: stage api
-.PHONY: stage
-stage:
+.PHONY: prod
+prod:
 	@git checkout master
 	@git fetch origin
 	@git merge origin/master
-	@docker compose --file compose.yaml --file compose.stage.yaml up --build backend --no-deps --detach backend
+	@docker compose --file compose.yaml --file compose.prod.yaml up --build backend --no-deps --detach backend
 
 # ==================================================================================== #
 # SQL MIGRATIONS
