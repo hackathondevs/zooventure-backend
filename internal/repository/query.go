@@ -58,4 +58,17 @@ const (
 		SET Succeed = TRUE
 		WHERE ID = ?;
 	`
+
+	// Notifications
+	qFetchNotifications = `
+		SELECT Text
+		FROM Notifications
+		WHERE ID = ?
+		ORDER BY CreatedAt DESC
+		LIMIT 5;
+	`
+	qCreateNotif = `
+		INSERT INTO Notifications (UserID, Text)
+		VALUE (:UserID, :Text);
+	`
 )
