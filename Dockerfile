@@ -14,10 +14,11 @@ WORKDIR /app
 ARG USER=runner
 ARG GROUP=$USER
 
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb
+RUN dpkg -i dumb-init_*.deb
+
 RUN addgroup -g 1000 runner && \
-adduser -DH -g '' -G runner -u 1000 runner && \
-wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb && \
-dpkg -i dumb-init_*.deb
+adduser -DH -g '' -G runner -u 1000 runner
 
 COPY --from=builder --chown=$USER:$GROUP --chmod=500 \
 /src/app \
