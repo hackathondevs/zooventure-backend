@@ -16,7 +16,8 @@ ARG GROUP=$USER
 
 RUN addgroup -g 1000 runner && \
 adduser -DH -g '' -G runner -u 1000 runner && \
-apk add dumb-init
+wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb && \
+dpkg -i dumb-init_*.deb
 
 COPY --from=builder --chown=$USER:$GROUP --chmod=500 \
 /src/app \
