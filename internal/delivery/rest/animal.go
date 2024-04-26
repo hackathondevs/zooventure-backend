@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/mirzahilmi/hackathon/internal/pkg/response"
+	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
 
@@ -18,12 +18,15 @@ func RegisterAnimalHandler(animalUsecase usecase.AnimalUsecaseItf, router fiber.
 }
 
 func (h *animalHandler) whatIs(c *fiber.Ctx) error {
-	pict, err := c.FormFile("picture")
-	if err != nil {
-		return response.NewError(fiber.StatusBadRequest, ErrRequestMalformed)
+	var raw model.PredictAnimalRequest
+	if err := c.BodyParser(&raw); err != nil {
+		return err
 	}
-
-	resp := h.animalUsecase.PredictAnimal(c.Context(), pict)
-
+	picture, err := c.FormFile("picture")
+	if err != nil {
+		return err
+	}
+	raw.Picture = picture
+	resp, err := h.animalUsecase.PredictAnimal(c.Context(), &raw)
 	return c.Status(fiber.StatusOK).JSON(resp)
 }

@@ -2,16 +2,16 @@ package usecase
 
 import (
 	"context"
-	"io/ioutil"
-	"mime/multipart"
+	"io"
 	"path"
 	"strings"
 
+	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/pkg/gemini"
 )
 
 type AnimalUsecaseItf interface {
-	PredictAnimal(ctx context.Context, pict *multipart.FileHeader) any
+	PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error)
 }
 
 type animalUsecase struct {
@@ -20,25 +20,23 @@ type animalUsecase struct {
 
 func NewAnimalUsecase() AnimalUsecaseItf {
 	geminiModel := gemini.NewGeminiAI()
-
-	return &animalUsecase{
-		geminiModel: geminiModel,
-	}
+	return &animalUsecase{geminiModel}
 }
 
-func (u *animalUsecase) PredictAnimal(ctx context.Context, pict *multipart.FileHeader) any {
-	file, _ := pict.Open()
-	fileBytes, _ := ioutil.ReadAll(file)
+func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error) {
+	file, err := raw.Picture.Open()
 	defer file.Close()
+	if err != nil {
+		return model.Animal{}, err
+	}
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		return model.Animal{}, err
+	}
+	predict := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
+	if predict.Name == "not animal" {
+		return predict, nil
+	}
 
-	respChan := make(chan any)
-	defer close(respChan)
-
-	go func() {
-		respChan <- u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(pict.Filename), ".", "", -1))
-	}()
-
-	resp := <-respChan
-
-	return &resp
+	return predict, nil
 }

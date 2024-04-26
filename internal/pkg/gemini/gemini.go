@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/mirzahilmi/hackathon/internal/model"
 	"google.golang.org/api/option"
 )
 
@@ -34,24 +36,14 @@ func NewGeminiAI() *GeminiAI {
 	return geminiAi
 }
 
-type AnimalPredictResp struct {
-	Name            string   `json:"name"`
-	LatinName       string   `json:"latin_name"`
-	CountryOfOrigin string   `json:"country_of_origin"`
-	Characteristics []string `json:"characteristics"`
-	Category        string   `json:"category"`
-	Lifespan        string   `json:"lifespan"`
-	Funfact         string   `json:"funfact"`
-}
-
-func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) any {
+func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) model.Animal {
 	resp, err := g.model.GenerateContent(ctx,
 		genai.Text("can you describe this image based and show with format json that i perform"),
 		genai.Text("the json using this format:"),
 		genai.Text("{"),
 		genai.Text("name : string,"),
-		genai.Text("latin_name : string,"),
-		genai.Text("country_of_origin : string,"),
+		genai.Text("latinName : string,"),
+		genai.Text("countryOfOrigin : string,"),
 		genai.Text("characteristics : array of string,"),
 		genai.Text("category : string (Karnivora or Omnivora or Herbivora),"),
 		genai.Text("lifespan : string,"),
@@ -77,10 +69,10 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 	cleanedInput = strings.ReplaceAll(cleanedInput, "\\\"", "\"")
 	cleanedInput = cleanedInput[2 : len(cleanedInput)-1]
 
-	var AnimalPredictResp AnimalPredictResp
-	if err := json.Unmarshal([]byte(cleanedInput), &AnimalPredictResp); err != nil {
+	var animal model.Animal
+	if err := jsoniter.Unmarshal([]byte(cleanedInput), &animal); err != nil {
 		log.Fatal(err)
 	}
 
-	return AnimalPredictResp
+	return animal
 }
