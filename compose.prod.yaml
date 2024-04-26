@@ -1,0 +1,30 @@
+networks:
+  caddy-net:
+    external: true
+
+volumes:
+  caddy_data: {}
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=caddy-net
+    networks:
+      - caddy-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+    restart: unless-stopped
+  
+  backend:
+    networks:
+      - caddy-net
+    env_file:
+      - .env
+    labels:
+      caddy: hackfest.miruza.my.id
+      caddy.reverse_proxy: "{{upstreams ${APP_PORT}}}"

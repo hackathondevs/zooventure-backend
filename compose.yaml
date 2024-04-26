@@ -1,0 +1,43 @@
+name: hackfest
+
+volumes:
+  hackfest-db-vol: {}
+
+networks:
+  hackfest-net:
+    driver: bridge
+
+services:
+  backend:
+    build: .
+    networks:
+      - hackfest-net
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb:11.3.2-jammy
+    restart: unless-stopped
+    networks:
+      - hackfest-net
+    volumes:
+      - hackfest-db-vol:/var/lib/mysql
+      - ${PWD}/db/migrations:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
+    environment:
+      - MARIADB_DATABASE=${DB_SCHEMA}
+      - MARIADB_ROOT_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su-mysql",
+          "--connect",
+          "--innodb_initialized"
+        ]
+      interval: 3s
+      retries: 5
+      start_period: 30s
