@@ -35,6 +35,9 @@ func main() {
 	userUsecase := usecase.NewUserUsecase(userRepo, supabaseImg, log)
 	rest.RegisterUserHandler(userUsecase, validator, api)
 
+	animalUsecase := usecase.NewAnimalUsecase()
+	rest.RegisterAnimalHandler(animalUsecase, api)
+
 	if err := app.Listen(":" + os.Getenv("APP_PORT")); err != nil {
 		log.Fatalf("Fail to start server: %v", err)
 	}

@@ -2,33 +2,28 @@ package rest
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/pkg/response"
+	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
 
-func RegisterAnimalHandler(router fiber.Router) {
-	router = router.Group("/animals")
-	router.Post("/_whatIs", whatIs)
+type animalHandler struct {
+	animalUsecase usecase.AnimalUsecaseItf
 }
 
-func whatIs(c *fiber.Ctx) error {
-	_, err := c.FormFile("picture")
+func RegisterAnimalHandler(animalUsecase usecase.AnimalUsecaseItf, router fiber.Router) {
+	animalHandler := animalHandler{animalUsecase}
+
+	router = router.Group("/animals")
+	router.Post("/_whatIs", animalHandler.whatIs)
+}
+
+func (h *animalHandler) whatIs(c *fiber.Ctx) error {
+	pict, err := c.FormFile("picture")
 	if err != nil {
 		return response.NewError(fiber.StatusBadRequest, ErrRequestMalformed)
 	}
 
-	// Call usecase to fetch picture context (prompt)
+	resp := h.animalUsecase.PredictAnimal(c.Context(), pict)
 
-	/*
-		{
-			"name": "Harimau",
-			"latin": "Harimau",
-			"habitat": "Sidoarjo, Indonesia",
-			"diets": "Karnivora",
-			"lifespan": "35 Tahun",
-			"funfact": "Berbeda dengan singa, harimau dewasa adalah satwa soliter yang menandai wilayahnya dengan urin dan cakaran di batang pohon. (max 20 kata)"
-		}
-	*/
-
-	return c.Status(fiber.StatusOK).JSON(model.Animal{})
+	return c.Status(fiber.StatusOK).JSON(resp)
 }
