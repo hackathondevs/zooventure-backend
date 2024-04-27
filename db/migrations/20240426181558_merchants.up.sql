@@ -10,7 +10,7 @@ CREATE TABLE Merchants (
     PRIMARY KEY (ID)
 ) ENGINE = INNODB DEFAULT CHARSET = UTF8;
 
-INSERT INTO merchants (
+INSERT INTO Merchants (
     Name,
     Code
 ) VALUES (
