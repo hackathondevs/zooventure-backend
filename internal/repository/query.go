@@ -9,7 +9,8 @@ const (
 			Password,
 			Name,
 			ProfilePicture,
-			Active
+			Active,
+			Balance
 		FROM Users
 		WHERE %s = ?
 		LIMIT 1;
@@ -29,7 +30,7 @@ const (
 	qUpdateUserProfile = `
 		UPDATE Users
 		SET Name = :Name
-		WHERE ID = ?;
+		WHERE ID = :ID;
 	`
 	qUpdateUserField = `
 		UPDATE Users
@@ -79,7 +80,7 @@ const (
 
 	// Enclosure
 	qGetAllEnclosure = `
-	    SELECT Name, Coordinate
+		SELECT Name, Coordinate
 		FROM Enclosures;
 	`
 	qFetchDistanceToEnclosure = `
@@ -91,12 +92,12 @@ const (
 
 	// Campaign
 	qGetAllCampaign = `
-	    SELECT 
-			Campaigns.ID, 
-			Campaigns.Picture, 
-			Campaigns.Title, 
-			Campaigns.Reward, 
-			CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
+		SELECT 
+		Campaigns.ID, 
+		Campaigns.Picture, 
+		Campaigns.Title, 
+		Campaigns.Reward, 
+		CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
 		FROM Campaigns
 		LEFT JOIN CampaignSubmissions
 		ON CampaignSubmissions.CampaignID = Campaigns.ID
@@ -104,17 +105,49 @@ const (
 		ORDER BY CreatedAt DESC;
 	`
 	qGetCampaignWithSubmission = `
-	    SELECT 
-			Campaigns.Picture, 
-			Campaigns.Title, 
-			Campaigns.Description, 
-			Campaigns.Reward,
-			CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
-			CampaignSubmissions.Submission
+		SELECT 
+		Campaigns.Picture, 
+		Campaigns.Title, 
+		Campaigns.Description, 
+		Campaigns.Reward,
+		CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
+		CampaignSubmissions.Submission
 		FROM Campaigns
 		LEFT JOIN CampaignSubmissions
 		ON CampaignSubmissions.CampaignID = Campaigns.ID
 		WHERE Campaigns.ID = ? AND CampaignSubmissions.UserID = ?
 		LIMIT 1;
 	`
+
+	// Exchanges
+	qCreateExchange = `
+		INSERT INTO Exchanges 
+		(UserID, MerchantID, Amount, Date, Status)
+		VALUE (:UserID, :MerchantID, :Amount, :Date, :Status);
+	`
+	qGetExchanges = `
+		SELECT
+			e.ID AS ID,
+			e.UserID AS UserID,
+			e.Amount AS Amount,
+			e.Date AS Date,
+			e.Status AS Status,
+			m.ID AS MerchantID,
+			m.Name AS MerchantName,
+			m.Code AS MerchantCode
+			FROM Exchanges e
+			JOIN Merchants m ON e.MerchantID = m.ID
+			WHERE %s  = ?
+			ORDER BY e.CreatedAt DESC;
+	`
+
+	// Merchants
+	qGetMerchantByParam = `
+		SELECT
+			ID,
+			Name,
+			Code
+		FROM Merchants
+		WHERE %s = ?
+		`
 )
