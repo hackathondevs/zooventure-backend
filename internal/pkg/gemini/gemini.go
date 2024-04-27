@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	jsoniter "github.com/json-iterator/go"
@@ -65,6 +66,8 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 	if err != nil {
 		return model.Animal{}, err
 	}
+	raw = strings.ReplaceAll(raw, "```json", "")
+	raw = strings.ReplaceAll(raw, "```", "")
 	var animal model.Animal
 	if err := jsoniter.Unmarshal([]byte(raw), &animal); err != nil {
 		return model.Animal{}, err
