@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -69,12 +68,12 @@ func (q *reportQueryer) Ext() sqlx.ExtContext {
 
 func (q *reportQueryer) CreateReport(ctx context.Context, report *model.ReportResource) error {
 	query, args, err := sqlx.Named(qCreateReport, fiber.Map{
+		"UserID":      report.UserID,
 		"Picture":     report.Picture,
 		"Description": report.Description,
 		"Location":    report.Location,
 	})
-	log.Println(query)
-	log.Println(args)
+
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import "mime/multipart"
 
 type ReportResource struct {
 	ID          int64  `json:"id" db:"ID"`
+	UserID      int64  `json:"userId" db:"UserID"`
 	Picture     string `json:"picture" db:"Picture"`
 	Description string `json:"description" db:"Description"`
 	Location    string `json:"location" db:"Location"`

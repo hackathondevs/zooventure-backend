@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS exchanges;
+DROP TABLE IF EXISTS Exchanges;

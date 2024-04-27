@@ -12,4 +12,5 @@ var (
 	ErrInsufficientBalance  = errors.New("Saldo tidak cukup")
 	ErrMerchantNotExist     = errors.New("Pedagang tidak dapat ditemukan")
 	ErrCampaignNotExist     = errors.New("Tidak dapat menemukan campaign")
+	ErrAlreadyReported      = errors.New("Sudah melaporkan campaign ini")
 )

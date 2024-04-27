@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/mirzahilmi/hackathon/internal/delivery/middleware"
 	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
@@ -21,9 +22,9 @@ func RegisterReportHandler(
 ) {
 	reportHandler := ReportHandler{usecase, validator}
 	router = router.Group("/reports")
-	router.Post("", reportHandler.CreateReport)
-	router.Get("", reportHandler.GetReports)
-	router.Patch("/:id<int>", reportHandler.UpdateReport)
+	router.Post("", middleware.BearerAuth("false"), reportHandler.CreateReport)
+	router.Get("", middleware.BearerAuth("true"), reportHandler.GetReports)
+	router.Patch("/:id<int>", middleware.BearerAuth("true"), reportHandler.UpdateReport)
 }
 
 func (h *ReportHandler) CreateReport(c *fiber.Ctx) error {

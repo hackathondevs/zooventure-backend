@@ -44,7 +44,7 @@ func main() {
 	rest.RegisterAnimalHandler(animalUsecase, validator, api)
 	campaignUsecase := usecase.NewCampaignUsecase(campaignRepo, log, supabaseClient)
 	rest.RegisterCampaignHandler(campaignUsecase, api, validator)
-	reportUsecase := usecase.NewReportUsecase(reportRepo, supabaseClient)
+	reportUsecase := usecase.NewReportUsecase(reportRepo, userRepo, supabaseClient)
 	rest.RegisterReportHandler(reportUsecase, validator, api)
 
 	if err := app.Listen(":" + os.Getenv("APP_PORT")); err != nil {

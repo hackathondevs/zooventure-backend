@@ -188,13 +188,14 @@ const (
 	// Reports
 	qCreateReport = `
 		INSERT INTO Reports
-		(Picture, Description, Location)
+		(UserID, Picture, Description, Location)
 		VALUE
-		(:Picture, :Description, :Location);
+		(:UserID, :Picture, :Description, :Location);
 	`
 	qGetReports = `
 		SELECT
 			ID,
+			UserID,
 			Picture,
 			Description,
 			Location,
@@ -212,6 +213,8 @@ const (
 	qGetReportByID = `
 		SELECT
 			ID,
+			UserID,
+			Picture,
 			Description,
 			Location,
 			CreatedAt,

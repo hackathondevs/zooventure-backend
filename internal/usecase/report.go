@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -20,11 +19,12 @@ type ReportUsecaseItf interface {
 
 type ReportUsecase struct {
 	reportRepo repository.ReportRepositoryItf
+	userRepo   repository.UserRepositoryItf
 	supabase   *storage_go.Client
 }
 
-func NewReportUsecase(reportRepo repository.ReportRepositoryItf, supabase *storage_go.Client) ReportUsecaseItf {
-	return &ReportUsecase{reportRepo, supabase}
+func NewReportUsecase(reportRepo repository.ReportRepositoryItf, userRepo repository.UserRepositoryItf, supabase *storage_go.Client) ReportUsecaseItf {
+	return &ReportUsecase{reportRepo, userRepo, supabase}
 }
 
 func (u *ReportUsecase) CreateReport(ctx context.Context, req model.ReportRequest) error {
@@ -47,11 +47,12 @@ func (u *ReportUsecase) CreateReport(ctx context.Context, req model.ReportReques
 
 	pictUrl := u.supabase.GetPublicUrl(os.Getenv("SUPABASE_BUCKET_ID"), req.Picture.Filename)
 	report := model.ReportResource{
+		UserID:      ctx.Value(ClientID).(int64),
 		Picture:     pictUrl.SignedURL,
 		Description: req.Description,
 		Location:    req.Location,
 	}
-	log.Println(report)
+
 	if err := client.CreateReport(ctx, &report); err != nil {
 		return err
 	}
@@ -74,20 +75,36 @@ func (u *ReportUsecase) GetReports(ctx context.Context) ([]model.ReportResource,
 }
 
 func (u *ReportUsecase) UpdateReport(ctx context.Context, id int64, action string) error {
-	client, err := u.reportRepo.NewClient(true, nil)
+	reportClient, err := u.reportRepo.NewClient(false, nil)
 	if err != nil {
 		return err
 	}
 
-	report, err := client.GetReportByID(ctx, id)
+	report, err := reportClient.GetReportByID(ctx, id)
 	if err != nil {
 		return err
+	}
+
+	if report.Action != "PENDING" {
+		return ErrAlreadyReported
+	}
+
+	userClient, err := u.userRepo.NewClient(true, nil)
+	if err != nil {
+		return err
+	}
+	defer userClient.Rollback()
+
+	if action == "APPROVED" {
+		if err := userClient.UpdateBalance(ctx, report.UserID, 100); err != nil {
+			return err
+		}
 	}
 
 	report.Action = action
-	if err := client.UpdateActionReport(ctx, &report); err != nil {
+	if err := reportClient.UpdateActionReport(ctx, &report); err != nil {
 		return err
 	}
 
-	return client.Commit()
+	return userClient.Commit()
 }
