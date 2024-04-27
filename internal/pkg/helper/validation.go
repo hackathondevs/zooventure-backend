@@ -1,29 +1,29 @@
 package helper
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 )
 
 func ValidationError(err validator.FieldError) string {
 	switch err.Tag() {
-	case "required":
+	case "harus ada":
 		return ""
 	case "ascii":
-		return ""
+		return "harus berupa ascii"
 	case "alphanum":
-		return ""
+		return "harus berupa alfabet dan angka"
 	case "alphanumunicode":
-		return ""
-	case "e164":
-		return ""
+		return "harus berupa unicode"
 	case "email":
-		return ""
+		return "harus berupa email yang valid"
 	case "min":
-		return ""
+		return fmt.Sprintf("minimal karakter adalah %s", err.Param())
 	case "eqfield":
-		return ""
+		return fmt.Sprintf("hharus sama dengan %s", err.Param())
 	case "url":
-		return ""
+		return "harus berupa URL"
 	default:
 		return ""
 	}
