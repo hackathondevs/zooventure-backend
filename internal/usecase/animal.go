@@ -38,7 +38,10 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAni
 	if err != nil {
 		return model.Animal{}, err
 	}
-	prediction := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
+	prediction, err := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
+	if err != nil {
+		return model.Animal{}, err
+	}
 	if prediction.Name == "not animal" {
 		return prediction, nil
 	}

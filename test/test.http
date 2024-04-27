@@ -1,5 +1,5 @@
 @baseURL = http://localhost:8080
-@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wM1QwNzo1ODo1MCswNzowMCIsImlhdCI6IjIwMjQtMDQtMjZUMDc6NTg6NTArMDc6MDAiLCJpc3MiOiIiLCJuYW1lIjoib3R0ZXIgd2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjZUMDc6NTg6NTArMDc6MDAiLCJzdWIiOiIxIn3MvIEvk9GPCgYd_KmBuoZcIaiIDrLmrObTT5adskT4DUM_0Kvl8W7aXBFllSS_QaCwkhTIJqxA9UVp2A_pVD0I
+@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNFQxMjoxMDoxMSswNzowMCIsImlhdCI6IjIwMjQtMDQtMjdUMTI6MTA6MTErMDc6MDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJuYW1lIjoiT3R0ZXIgV2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjdUMTI6MTA6MTErMDc6MDAiLCJzdWIiOiI1In3jqn9t7lKtgLlBDmk-b194NvgZCDwNlnfks4HcuK68eiVBppHYwoGuIBybzXbDX5CHLS5uUPfhfJkn6Xip3AsA
 @email = otter.whopper@gmail.com
 @password = 12345678
 
@@ -16,10 +16,6 @@ Content-Type: application/json
     "passwordConfirmation": "{{password}}",
     "name": "Otter Whopper"
 }
-
-### User Verification
-GET {{baseURL}}/api/users/_verify?s=1&t=4OoejbqWFcRDTP87aPjEMEsYqo8SoSLs
-Accept: text/plain
 
 ### User Log-in
 POST {{baseURL}}/api/users/_login
@@ -66,6 +62,6 @@ Content-Disposition: form-data; name="long";
 Content-Disposition: form-data; name="picture"; filename="picture.png"
 Content-Type: image/png;
 
-< ./picture.png
+< ./panda.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 

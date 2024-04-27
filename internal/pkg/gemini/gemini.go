@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"strings"
+	"strconv"
 
 	"github.com/google/generative-ai-go/genai"
 	jsoniter "github.com/json-iterator/go"
@@ -36,8 +36,8 @@ func NewGeminiAI() *GeminiAI {
 	return geminiAi
 }
 
-func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) model.Animal {
-	resp, err := g.model.GenerateContent(ctx,
+func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) (model.Animal, error) {
+	prompt, err := g.model.GenerateContent(ctx,
 		genai.Text("can you describe this image based and show with format json that i perform and if the image is not animal please fill the json with not animal"),
 		genai.Text("the json using this format:"),
 		genai.Text("{"),
@@ -49,30 +49,26 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 		genai.Text("lifespan : string,"),
 		genai.Text("funfact : string (fun fact about the animal),"),
 		genai.Text("}"),
-		genai.Text("if the image not animal and not have any animal in the image please just fill the json with not animal"),
-		genai.Text("Please provide the response as json format (inside json)"),
+		genai.Text("if the image is not animal and dont have any animal in the image please just fill the json stringfields with not animal"),
+		genai.Text("Please only provide me with the data in json format one-line, DONT output anything else"),
 		genai.ImageData("jpeg", data),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return model.Animal{}, err
 	}
-
-	part := resp.Candidates[0].Content.Parts[0]
-
-	jsonPart, err := json.Marshal(part)
+	resp := prompt.Candidates[0].Content.Parts[0]
+	json, err := json.Marshal(resp)
 	if err != nil {
-		log.Fatal(err)
+		return model.Animal{}, err
 	}
-
-	input := string(jsonPart)
-	cleanedInput := strings.ReplaceAll(input, "\\n", "")
-	cleanedInput = strings.ReplaceAll(cleanedInput, "\\\"", "\"")
-	cleanedInput = cleanedInput[2 : len(cleanedInput)-1]
-
+	raw, err := strconv.Unquote(string(json))
+	if err != nil {
+		return model.Animal{}, err
+	}
+	raw = raw[8 : len(raw)-3]
 	var animal model.Animal
-	if err := jsoniter.Unmarshal([]byte(cleanedInput), &animal); err != nil {
-		log.Fatal(err)
+	if err := jsoniter.Unmarshal([]byte(raw), &animal); err != nil {
+		return model.Animal{}, err
 	}
-
-	return animal
+	return animal, nil
 }
