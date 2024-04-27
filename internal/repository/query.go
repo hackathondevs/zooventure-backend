@@ -77,7 +77,11 @@ const (
 		VALUE (:UserID, :Text);
 	`
 
-	// User Enclosure
+	// Enclosure
+	qGetAllEnclosure = `
+	    SELECT Name, Coordinate
+		FROM Enclosures;
+	`
 	qFetchDistanceToEnclosure = `
 		SELECT ST_Distance_Sphere(Coordinate, POINT(:Longitude, :Latitude)) AS Distance 
 		FROM Enclosures

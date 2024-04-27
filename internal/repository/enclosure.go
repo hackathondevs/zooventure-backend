@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
+	"github.com/mirzahilmi/hackathon/internal/model"
 )
 
 type EnclosureRepositoryItf interface {
@@ -21,6 +22,7 @@ func NewEnclosureRepository(db *sqlx.DB) EnclosureRepositoryItf {
 
 type EnclosureQueryerItf interface {
 	txCompat
+	GetAll(ctx context.Context) ([]model.Enclosure, error)
 	FetchClosest(ctx context.Context, lat, long float64) (float64, error)
 }
 
@@ -60,6 +62,14 @@ func (q *enclosureQueryer) Rollback() error {
 
 func (q *enclosureQueryer) Ext() sqlx.ExtContext {
 	return q.ext
+}
+
+func (q *enclosureQueryer) GetAll(ctx context.Context) ([]model.Enclosure, error) {
+	var enclosures []model.Enclosure
+	if err := sqlx.SelectContext(ctx, q.ext, &enclosures, qGetAllEnclosure); err != nil {
+		return nil, err
+	}
+	return enclosures, nil
 }
 
 func (q *enclosureQueryer) FetchClosest(ctx context.Context, lat float64, long float64) (float64, error) {
