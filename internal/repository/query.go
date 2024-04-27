@@ -79,18 +79,6 @@ const (
 		VALUE (:UserID, :Text);
 	`
 
-	// Enclosure
-	qGetAllEnclosure = `
-		SELECT Name, Coordinate
-		FROM Enclosures;
-	`
-	qFetchDistanceToEnclosure = `
-		SELECT ST_Distance_Sphere(Coordinate, POINT(:Longitude, :Latitude)) AS Distance 
-		FROM Enclosures
-		ORDER BY Distance ASC
-		LIMIT 1;
-	`
-
 	// Campaign
 	qGetAllCampaignByUserID = `
 		SELECT 
@@ -230,6 +218,35 @@ const (
 			Action
 		FROM Reports
 		WHERE ID = ?
+	`
+	// Animals
+	qGetAllAnimals = `
+	    SELECT,
+			ID,
+			Name,
+			Latin,
+			Origin,
+			Characteristics,
+			Diet,
+			Lifespan,
+			EnclosureCoordinate
+		FROM Animals;
+	`
+	qFetchTopRelated = `
+		SELECT
+			ID,
+			Picture,
+			Name,
+			Latin,
+			Origin,
+			Characteristic,
+			Diet,
+			Lifespan,
+			EnclosureCoordinate,
+			ST_Distance_Sphere(EnclosureCoordinate, POINT(:Longitude, :Latitude)) AS Distance
+		FROM Animals
+		WHERE Name LIKE :Name
+		ORDER BY Distance ASC
 		LIMIT 1;
 	`
 )

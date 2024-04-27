@@ -3,8 +3,6 @@ package usecase
 import (
 	"context"
 	"io"
-	"path"
-	"strings"
 
 	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/pkg/gemini"
@@ -12,60 +10,51 @@ import (
 )
 
 type AnimalUsecaseItf interface {
-	PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error)
+	PredictAnimal(ctx context.Context, data *model.PredictAnimalReq) (model.AnimalResource, error)
 }
 
 type animalUsecase struct {
-	userRepo      repository.UserRepositoryItf
-	enclosureRepo repository.EnclosureRepositoryItf
-	geminiModel   *gemini.GeminiAI
+	userRepo    repository.UserRepositoryItf
+	animalRepo  repository.AnimalRepositoryItf
+	geminiModel *gemini.GeminiAI
 }
 
 func NewAnimalUsecase(
 	userRepo repository.UserRepositoryItf,
-	enclosureRepo repository.EnclosureRepositoryItf,
+	animalRepo repository.AnimalRepositoryItf,
 ) AnimalUsecaseItf {
-	return &animalUsecase{userRepo, enclosureRepo, gemini.NewGeminiAI()}
+	return &animalUsecase{userRepo, animalRepo, gemini.NewGeminiAI()}
 }
 
-func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error) {
-	file, err := raw.Picture.Open()
+func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAnimalReq) (model.AnimalResource, error) {
+	file, err := data.Picture.Open()
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
 	defer file.Close()
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
-	fileBytes, err := io.ReadAll(file)
+	bytes, err := io.ReadAll(file)
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
-	prediction, err := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
+	prediction, err := u.geminiModel.PredictImageAnimal(ctx, bytes)
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
-	if prediction.Name == "not animal" {
-		return prediction, nil
+	prediction = prediction[1:]
+	if prediction == "notanimal" {
+		return model.AnimalResource{}, err
 	}
-	enclosureRepo, err := u.enclosureRepo.NewClient(false, nil)
+	animalClient, err := u.animalRepo.NewClient(false, nil)
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
-	distance, err := enclosureRepo.FetchClosest(ctx, raw.Lat, raw.Long)
+	animal, err := animalClient.FetchTopRelated(ctx, "%"+prediction+"%", data.Lat, data.Long)
 	if err != nil {
-		return model.Animal{}, err
+		return model.AnimalResource{}, err
 	}
-	if distance < 16 {
-		return prediction, nil
-	}
-	prediction.GotBonus = true
-	userClient, err := u.userRepo.NewClient(false, nil)
-	if err != nil {
-		return model.Animal{}, err
-	}
-	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), 50); err != nil {
-		return model.Animal{}, err
-	}
-	return prediction, nil
+
+	return animal.Resource(), nil
 }

@@ -502,6 +502,40 @@ paths:
               example:
                 errors:
                   message: Internal Server Error
+  /api/animals/_whatIs:
+    post:
+      tags:
+        - animals
+      operationId: whatIsAnimal
+      security:
+        - PasetoAuth: []
+      summary: What are this animal
+      description: Take a picture and find out what this animal name
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - picture
+                - lat
+                - long
+              properties:
+                picture:
+                  type: string
+                  format: binary
+                lat:
+                  type: number
+                long:
+                  type: number
+      responses:
+        "200":
+          description: Profile picture successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Animal"
 components:
   schemas:
     Error:
@@ -540,6 +574,40 @@ components:
         email: john.doe@gmail.com
         profilePicture: url
         name: johndoe
+    Animal:
+      type: object
+      properties:
+        id:
+          type: integer
+        picture:
+          type: string
+        name:
+          type: string
+        latin:
+          type: string
+        origin:
+          type: string
+        characteristic:
+          type: string
+        diet:
+          type: string
+        lifespan:
+          type: string
+        lat:
+          type: number
+        long:
+          type: number
+      example:
+        id: 1,
+        picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z,
+        name: Harimau Sumatera
+        latin: Panthera Tigris
+        origin: Sumatera, Indonesia
+        characteristic: Harimau Sumatera adalah salah satu subspesies harimau yang hanya ditemukan di habitat asli pulau Sumatera, yang merupakan bagian dari Indonesia.
+        diet: Karnivora
+        lifespan: 20 Tahun
+        lat: 112.73602656088153
+        long: -7.296691437475779
   securitySchemes:
     PasetoAuth:
       type: http
