@@ -1,0 +1,548 @@
+openapi: 3.1.0
+info:
+  title: Zooventure - OpenAPI 3.1.0
+  description: |-
+    Zooventure's OpenAPI Specification.  
+    Made with <3 by BCC Nata de Coco  
+    Some useful links:
+      - [Front-End Repository](https://github.com/hackfestdevs/front-end.git)
+      - [Back-End Repository](https://github.com/hackfestdevs/back-end.git)
+  version: 1.0.0
+servers:
+  - url: https://hackfest.miruza.my.id
+    description: Production server
+tags:
+  - name: utility
+    description: Server utility
+  - name: authentication
+    description: Ways to authenticate to the server
+  - name: users
+    description: All about `users` as a resource
+  - name: animals
+    description: All about animals
+  - name: campaigns
+    description: All about campaigns
+  - name: notifications
+    description: All about notifications
+paths:
+  /api/status:
+    get:
+      tags:
+        - utility
+      operationId: apiStatus
+      summary: Check API Status & Uptime
+      description: Check API status and uptime since server started
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - uptime
+                properties:
+                  status:
+                    type: string
+                  uptime:
+                    type: string
+              example:
+                status: Healthy
+                uptime: 3h14m14.381270501s
+        "500":
+          description: Something wrong here
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+  /api/health:
+    get:
+      tags:
+        - utility
+      operationId: apiHealth
+      summary: Same as /api/status
+      description: Check API status and uptime since server started
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - uptime
+                properties:
+                  status:
+                    type: string
+                  uptime:
+                    type: string
+              example:
+                status: Healthy
+                uptime: 3h14m14.381270501s
+        "500":
+          description: Something wrong here
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+  /api/users:
+    post:
+      tags:
+        - authentication
+      operationId: signUp
+      summary: User Signing up
+      description: Store new user and send email to verify email ownership, meanwhile user will be flagged as inactive in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - passwordConfirmation
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                passwordConfirmation:
+                  type: string
+                  format: password
+                name:
+                  type: string
+              example:
+                email: john.doe@gmail.com
+                password: "12345678"
+                passwordConfirmation: "12345678"
+                name: johndoe
+      responses:
+        "201":
+          description: Success Sign up Request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Created
+        "409":
+          description: field `email` or `name` already exist in the system
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                nameAlreadyExist:
+                  summary: Name already exist in the system
+                  value:
+                    errors:
+                      message: Conflict
+                      name: Nombre ya existe
+                emailAlreadyExist:
+                  summary: Email already exist in the system
+                  value:
+                    errors:
+                      message: Conflict
+                      email: Ya existe el correo electrónico
+        "422":
+          description: Failed field validation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unprocessable Entity
+                  password: El campo debe tener al menos %s caracteres de longitud
+                  credential: El campo debe ser alfanumérico
+        "500":
+          description: Something wrong here with the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+    get:
+      tags:
+        - users
+      operationId: profile
+      security:
+        - PasetoAuth: []
+      summary: Get user's profile data
+      description: Fetch user's profile data
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Malformed Request Body or Bearer Authorization Header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Bad Request
+        "401":
+          description: Request unauthorized either because of token is not valid or token has been expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unauthorized
+        "404":
+          description: Client's user does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Pengguna tidak dapat ditemukan
+        "500":
+          description: Something wrong here with the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+    put:
+      tags:
+        - users
+      operationId: updateProfile
+      security:
+        - PasetoAuth: []
+      summary: Update User's Profile
+      description: Update User's Profile Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: johndoe
+      responses:
+        "200":
+          description: Successfully updated user's profile
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OK
+        "400":
+          description: Malformed Request Body or Bearer Authorization Header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Bad Request
+        "401":
+          description: Request unauthorized either because of token is not valid or token has been expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unauthorized
+        "409":
+          description: field `name` already exist in the system
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Conflict
+                  name: Nombre ya existe
+        "422":
+          description: Failed field validation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unprocessable Entity
+                  name: El campo debe ser alfanumérico
+                  firstName: El campo debe ser alfanumérico
+                  lastName: El campo debe ser alfanumérico
+                  displayName: El campo debe ser alfanumérico
+                  phoneNumber: El campo debe ser un formato estándar E.164 válido
+                  occupation: El campo debe ser alfanumérico
+                  biography: El campo debe ser Unicode alfanumérico
+                  type: El campo debe ser alfanumérico
+                  credential: El campo debe ser alfanumérico
+        "500":
+          description: Something wrong here with the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+  /api/users/_login:
+    post:
+      tags:
+        - authentication
+      operationId: login
+      summary: Log user in
+      description: Attempt to login with the provided credential
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                rememberMe:
+                  type: boolean
+              example:
+                email: john.doe@gmail.com
+                password: "12345678"
+                rememberMe: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+              example:
+                token: v4.public.sIgVm0es9uswZliPdyXOOi99czPbpl41KOUu45e62BvCaL5H3kHNibrbRZkM1-wW091ARzNexLY8g0GZA0-.eyJraWQiOiAiMTIzNDUifQ
+        "401":
+          description: Incorrect email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                incorrectPassword:
+                  summary: The provided password is incorrect
+                  value:
+                    errors:
+                      message: Kata sandi salah
+                userIsNotActive:
+                  summary: User exist in the system but is not active yet
+                  value:
+                    errors:
+                      message: Pengguna masih belum terverifikasi
+                userDoesNotExist:
+                  summary: User does not exist in the system
+                  value:
+                    errors:
+                      message: Pengguna tidak dapat ditemukan
+        "422":
+          description: Failed field validation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unprocessable Entity
+                  email: Harus berupa email yang valid
+                  password: Minimal memiliki panjang 8 karakter
+        "500":
+          description: Something wrong here with the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+  /api/users/_uploadProfilePicture:
+    post:
+      tags:
+        - users
+      operationId: uploadProfilePicture
+      security:
+        - PasetoAuth: []
+      summary: Upload User's Profile Picture
+      description: Upload User's Profile Picture
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - profilePicture
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Profile picture successfully uploaded
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OK
+        "400":
+          description: Malformed Request Body or Bearer Authorization Header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Bad Request
+        "401":
+          description: Request unauthorized either because of token is not valid or token has been expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unauthorized
+        "413":
+          description: Picture file larger than 50MB
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Request Entity Too Large
+        "500":
+          description: Something wrong here with the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+  /api/users/_deleteProfilePicture:
+    delete:
+      tags:
+        - users
+      operationId: deleteProfilePicture
+      security:
+        - PasetoAuth: []
+      summary: Delete User's Profile Picture
+      description: Delete User's Profile Picture
+      responses:
+        "200":
+          description: Successfully deleted
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: OK
+        "400":
+          description: Malformed Bearer Authorization Header
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Bad Request
+        "401":
+          description: Request unauthorized either because of token is not valid or token has been expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Unauthorized
+        "500":
+          description: Something wrong here
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                errors:
+                  message: Internal Server Error
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: object
+          properties:
+            message:
+              type: string
+              description: The error message, for now its taken from the HTTP Status
+          additionalProperties:
+            type: string
+            description: The corresponding field error with the format of field name as the key and the error message as the value
+          example:
+            message: Unprocessable Entity
+            email: must be valid email
+            password: must be atleast 8 characters length
+            passwordConfirmation: value must equal to password field
+    User:
+      type: object
+      required:
+        - email
+        - profilePicture
+        - name
+      properties:
+        email:
+          type: string
+        profilePicture:
+          type: string
+        name:
+          type: string
+      example:
+        email: john.doe@gmail.com
+        profilePicture: url
+        name: johndoe
+  securitySchemes:
+    PasetoAuth:
+      type: http
+      description: Authorization and authentication with Paseto v4
+      scheme: bearer
+      bearerFormat: JWT

@@ -103,14 +103,7 @@ func (u *userUsecase) UpdateUserProfile(ctx context.Context, userClean *model.Us
 	mysqlErr := pool.MySQLErr.Get().(*mysql.MySQLError)
 	defer pool.MySQLErr.Put(mysqlErr)
 	if err := client.Update(ctx, &user); err != nil {
-		switch {
-		case errors.As(err, &mysqlErr) && mysqlErr.Number == 1062:
-			return response.NewCustomError(fiber.StatusConflict, fiber.Map{
-				"name": ErrNameExist.Error(),
-			})
-		default:
-			return err
-		}
+		return err
 	}
 	return nil
 }

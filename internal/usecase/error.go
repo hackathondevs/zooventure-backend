@@ -3,14 +3,13 @@ package usecase
 import "errors"
 
 var (
-	ErrUserNotActive        = errors.New("User is not active")
-	ErrUserNotExist         = errors.New("User is not exist")
-	ErrWrongPassword        = errors.New("Wrong user password")
-	ErrVerificationNotExist = errors.New("Verification not exist")
-	ErrEmailExist           = errors.New("Email already exist")
-	ErrNameExist            = errors.New("Name already exist")
-	ErrIDNotNumeric         = errors.New("ID is not numeric")
-	ErrInsufficientBalance  = errors.New("Insufficient balance")
-	ErrMerchantNotExist     = errors.New("Merchant not exist")
-	ErrCampaignNotExist     = errors.New("Campaign not exist")
+	ErrUserNotActive        = errors.New("Pengguna masih belum terverifikasi")
+	ErrUserNotExist         = errors.New("Pengguna tidak dapat ditemukan")
+	ErrWrongPassword        = errors.New("Kata sandi salah")
+	ErrVerificationNotExist = errors.New("Percobaan verifikasi tidak ditemukan")
+	ErrEmailExist           = errors.New("Alamat email sudah digunakan")
+	ErrIDNotNumeric         = errors.New("Nomor ID bukan berupa angka")
+	ErrInsufficientBalance  = errors.New("Saldo tidak cukup")
+	ErrMerchantNotExist     = errors.New("Pedagang tidak dapat ditemukan")
+	ErrCampaignNotExist     = errors.New("Tidak dapat menemukan campaign")
 )

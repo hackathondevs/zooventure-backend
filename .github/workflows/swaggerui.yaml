@@ -1,0 +1,50 @@
+name: 🚀 Deploy SwaggerUI OAS 3.1
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+on:
+  push:
+    paths:
+      - api/openapi.yaml
+
+jobs:
+  swaggerui:
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+    steps:
+      - name: 📝 Get latest API specification
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |-
+            api
+          sparse-checkout-cone-mode: false
+
+      - name: 🚚 Move API spec to /api/dist
+        shell: bash
+        run: |-
+          echo "Copying API spec file to /api/dist"
+          cp ${{ github.workspace }}/api/openapi.yaml ${{ github.workspace }}/api/dist
+
+      - name: 🍀 Start Deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          env: API - OAS 3.1.0
+
+      - name: 🌠 Deploy to Vercel
+        working-directory: ${{ github.workspace }}/api/dist
+        run: |-
+          npm install --global vercel
+          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod
+
+      - name: ✅ Update Deployment Status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
