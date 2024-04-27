@@ -65,7 +65,6 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 	if err != nil {
 		return model.Animal{}, err
 	}
-	raw = raw[8 : len(raw)-3]
 	var animal model.Animal
 	if err := jsoniter.Unmarshal([]byte(raw), &animal); err != nil {
 		return model.Animal{}, err
