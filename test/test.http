@@ -1,5 +1,5 @@
-@baseURL = http://localhost:8080
-@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNVQwNTo1MTowNCswNzowMCIsImlhdCI6IjIwMjQtMDQtMjhUMDU6NTE6MDQrMDc6MDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJuYW1lIjoiT3R0ZXIgV2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjhUMDU6NTE6MDQrMDc6MDAiLCJyb2xlIjoiZmFsc2UiLCJzdWIiOiIxIn3xy630oDCdBFeJCqtEv-uWr4iCWDOqDgS5WxfcFfhVHMgzzs7hvaUiufkAutKz3ScMpHKSQeEwM_qWqxWpYgoM
+@baseURL = https://hackfest.miruza.my.id
+@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNFQyMzozNjozN1oiLCJpYXQiOiIyMDI0LTA0LTI3VDIzOjM2OjM3WiIsImlzcyI6Imh0dHBzOi8vaGFja2Zlc3QubWlydXphLm15LmlkIiwibmFtZSI6Ik90dGVyIFdob3BwZXIiLCJuYmYiOiIyMDI0LTA0LTI3VDIzOjM2OjM3WiIsInJvbGUiOiJmYWxzZSIsInN1YiI6IjEifX-teHOYMfLAlqYLYxZX69tP2BkY6suBG1IJGhCvda4hESFaYxYU-3VwqzEyRmjfPr_-ebHxo09YgoMX_ZpCSwI
 @email = otter.whopper@gmail.com
 @password = 12345678
 
@@ -43,6 +43,16 @@ Content-Type: application/json
 
 {
     "": ""
+}
+
+### Get Trivia
+POST {{baseURL}}/api/animals/trivia
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Harimau Sumatera"
 }
 
 ### GET

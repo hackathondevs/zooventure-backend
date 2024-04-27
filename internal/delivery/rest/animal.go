@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/mirzahilmi/hackathon/internal/delivery/middleware"
 	"github.com/mirzahilmi/hackathon/internal/model"
+	"github.com/mirzahilmi/hackathon/internal/pkg/response"
 	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
 
@@ -23,6 +24,7 @@ func RegisterAnimalHandler(
 	router = router.Group("/animals")
 	router.Post("/_whatIs", middleware.BearerAuth("false"), animalHandler.whatIs)
 	router.Get("", middleware.BearerAuth("false"), animalHandler.fecthAll)
+	router.Post("/trivia", middleware.BearerAuth("false"), animalHandler.trivia)
 }
 
 func (h *animalHandler) whatIs(c *fiber.Ctx) error {
@@ -51,4 +53,18 @@ func (h *animalHandler) fecthAll(c *fiber.Ctx) error {
 		return err
 	}
 	return c.Status(fiber.StatusOK).JSON(animals)
+}
+
+func (h *animalHandler) trivia(c *fiber.Ctx) error {
+	var animal struct {
+		Name string `json:"name" validate:"required"`
+	}
+	if err := c.BodyParser(&animal); err != nil {
+		return response.NewError(fiber.StatusBadRequest, ErrRequestMalformed)
+	}
+	trivia, err := h.animalUsecase.GetTrivia(c.Context(), animal.Name)
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(trivia)
 }

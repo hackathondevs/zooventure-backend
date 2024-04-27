@@ -33,6 +33,7 @@ func NewFiber(log *logrus.Logger) *fiber.App {
 
 func newErrorHandler(log *logrus.Logger) fiber.ErrorHandler {
 	return func(ctx *fiber.Ctx, err error) error {
+		log.Error(err)
 		var apiErr *response.Error
 		if errors.As(err, &apiErr) {
 			return ctx.Status(apiErr.Code).JSON(fiber.Map{
@@ -58,8 +59,6 @@ func newErrorHandler(log *logrus.Logger) fiber.ErrorHandler {
 			})
 		}
 
-		log.Error(err)
-
 		var fiberErr *fiber.Error
 		if errors.As(err, &fiberErr) {
 			return ctx.Status(fiberErr.Code).JSON(fiber.Map{
@@ -68,7 +67,7 @@ func newErrorHandler(log *logrus.Logger) fiber.ErrorHandler {
 		}
 
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"errors": fiber.Map{"message": utils.StatusMessage(fiber.StatusInternalServerError), "err": err.Error()},
+			"errors": fiber.Map{"message": utils.StatusMessage(fiber.StatusInternalServerError)},
 		})
 	}
 }

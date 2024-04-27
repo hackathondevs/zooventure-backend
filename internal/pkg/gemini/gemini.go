@@ -2,12 +2,16 @@ package gemini
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/mirzahilmi/hackathon/internal/model"
 	"google.golang.org/api/option"
 )
 
@@ -51,4 +55,30 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, picture []byte) (stri
 		}
 	}
 	return formattedContent.String(), nil
+}
+
+func (g *GeminiAI) GenerateTrivia(ctx context.Context, animal string) (model.Trivia, error) {
+	content, err := g.model.GenerateContent(ctx,
+		genai.Text("Make me a single trivia quiz about "+animal+" with 3 possible answer, use the following JSON structure for the output"),
+		genai.Text(`{"question"; "Whats the question?","answer":"the correct answer value","optA"; "Answer Option A","optB"; "Answer Option B","optC"; "Answer Option C"}`),
+		genai.Text("Give me only the JSON output in one-line, without anything else"),
+		genai.Text("Answer it in indonesian language"),
+	)
+	if err != nil {
+		return model.Trivia{}, err
+	}
+	part := content.Candidates[0].Content.Parts[0]
+	jsonByte, err := json.Marshal(part)
+	if err != nil {
+		log.Fatal(err)
+	}
+	jsonStr, err := strconv.Unquote(string(jsonByte))
+	if err != nil {
+		return model.Trivia{}, err
+	}
+	var trivia model.Trivia
+	if err := jsoniter.Unmarshal([]byte(jsonStr), &trivia); err != nil {
+		return model.Trivia{}, err
+	}
+	return trivia, nil
 }

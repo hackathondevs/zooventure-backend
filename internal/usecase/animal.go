@@ -12,6 +12,7 @@ import (
 type AnimalUsecaseItf interface {
 	PredictAnimal(ctx context.Context, data *model.PredictAnimalReq) (model.AnimalResource, error)
 	FetchAll(ctx context.Context) ([]model.AnimalResource, error)
+	GetTrivia(ctx context.Context, animal string) (model.Trivia, error)
 }
 
 type animalUsecase struct {
@@ -60,7 +61,6 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	return animal.Resource(), nil
 }
 
-// FetchAll implements AnimalUsecaseItf.
 func (u *animalUsecase) FetchAll(ctx context.Context) ([]model.AnimalResource, error) {
 	animalClient, err := u.animalRepo.NewClient(false, nil)
 	if err != nil {
@@ -75,4 +75,12 @@ func (u *animalUsecase) FetchAll(ctx context.Context) ([]model.AnimalResource, e
 		animals = append(animals, animal.Resource())
 	}
 	return animals, nil
+}
+
+func (u *animalUsecase) GetTrivia(ctx context.Context, animal string) (model.Trivia, error) {
+	trivia, err := u.geminiModel.GenerateTrivia(ctx, animal)
+	if err != nil {
+		return model.Trivia{}, err
+	}
+	return trivia, nil
 }
