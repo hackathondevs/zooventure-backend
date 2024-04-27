@@ -88,4 +88,33 @@ const (
 		ORDER BY Distance ASC
 		LIMIT 1;
 	`
+
+	// Campaign
+	qGetAllCampaign = `
+	    SELECT 
+			Campaigns.ID, 
+			Campaigns.Picture, 
+			Campaigns.Title, 
+			Campaigns.Reward, 
+			CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
+		FROM Campaigns
+		LEFT JOIN CampaignSubmissions
+		ON CampaignSubmissions.CampaignID = Campaigns.ID
+		WHERE CampaignSubmissions.UserID = ?
+		ORDER BY CreatedAt DESC;
+	`
+	qGetCampaignWithSubmission = `
+	    SELECT 
+			Campaigns.Picture, 
+			Campaigns.Title, 
+			Campaigns.Description, 
+			Campaigns.Reward,
+			CASE WHEN CampaignSubmissions.Submission IS NOT NULL THEN TRUE ELSE FALSE AS Submitted
+			CampaignSubmissions.Submission
+		FROM Campaigns
+		LEFT JOIN CampaignSubmissions
+		ON CampaignSubmissions.CampaignID = Campaigns.ID
+		WHERE Campaigns.ID = ? AND CampaignSubmissions.UserID = ?
+		LIMIT 1;
+	`
 )
