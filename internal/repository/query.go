@@ -41,6 +41,11 @@ const (
 		SET Active = TRUE
 		WHERE ID = ?;
 	`
+	qUpdateUserBalance = `
+		UPDATE Users 
+		SET Balance = Balance + :Value
+		WHERE ID = :ID;
+	`
 
 	// UserVerifications
 	qCreateUserVerification = `
@@ -70,5 +75,13 @@ const (
 	qCreateNotif = `
 		INSERT INTO Notifications (UserID, Text)
 		VALUE (:UserID, :Text);
+	`
+
+	// User Enclosure
+	qFetchDistanceToEnclosure = `
+		SELECT ST_Distance_Sphere(Coordinate, POINT(:Longitude, :Latitude)) AS Distance 
+		FROM Enclosures
+		ORDER BY Distance ASC
+		LIMIT 1;
 	`
 )

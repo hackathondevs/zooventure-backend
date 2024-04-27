@@ -8,6 +8,7 @@ import (
 
 	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/pkg/gemini"
+	"github.com/mirzahilmi/hackathon/internal/repository"
 )
 
 type AnimalUsecaseItf interface {
@@ -15,12 +16,16 @@ type AnimalUsecaseItf interface {
 }
 
 type animalUsecase struct {
-	geminiModel *gemini.GeminiAI
+	userRepo      repository.UserRepositoryItf
+	enclosureRepo repository.EnclosureRepositoryItf
+	geminiModel   *gemini.GeminiAI
 }
 
-func NewAnimalUsecase() AnimalUsecaseItf {
-	geminiModel := gemini.NewGeminiAI()
-	return &animalUsecase{geminiModel}
+func NewAnimalUsecase(
+	userRepo repository.UserRepositoryItf,
+	enclosureRepo repository.EnclosureRepositoryItf,
+) AnimalUsecaseItf {
+	return &animalUsecase{userRepo, enclosureRepo, gemini.NewGeminiAI()}
 }
 
 func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error) {
@@ -33,10 +38,27 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAni
 	if err != nil {
 		return model.Animal{}, err
 	}
-	predict := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
-	if predict.Name == "not animal" {
-		return predict, nil
+	prediction := u.geminiModel.PredictImageAnimal(ctx, fileBytes, strings.Replace(path.Ext(raw.Picture.Filename), ".", "", -1))
+	if prediction.Name == "not animal" {
+		return prediction, nil
 	}
-
-	return predict, nil
+	enclosureRepo, err := u.enclosureRepo.NewClient(false, nil)
+	if err != nil {
+		return model.Animal{}, err
+	}
+	distance, err := enclosureRepo.FetchClosest(ctx, raw.Lat, raw.Long)
+	if err != nil {
+		return model.Animal{}, err
+	}
+	if distance < 16 {
+		return prediction, nil
+	}
+	userClient, err := u.userRepo.NewClient(false, nil)
+	if err != nil {
+		return model.Animal{}, err
+	}
+	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), 100); err != nil {
+		return model.Animal{}, err
+	}
+	return prediction, nil
 }

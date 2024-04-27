@@ -3,6 +3,9 @@
 @email = exquisitemirza@gmail.com
 @password = 12345678
 
+GET {{baseURL}}/api/status
+Accept: application/json
+
 ### User Sign-up
 POST {{baseURL}}/api/users
 Content-Type: application/json
@@ -46,14 +49,22 @@ Content-Type: application/json
     "": ""
 }
 
-### Upload Profile Picture
-POST {{baseURL}}/api/users/_uploadProfilePicture
+### What is this animal?
+POST {{baseURL}}/api/animals/_whatIs
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 Authorization: Bearer {{token}}
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="";
-Content-Type: image/png
+Content-Disposition: form-data; name="lat";
+
+-7.2973518381699725
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="long";
+
+112.73693682351974
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="picture"; filename="picture.png"
+Content-Type: image/png;
 
 < ./picture.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--

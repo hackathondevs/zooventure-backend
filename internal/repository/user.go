@@ -28,6 +28,7 @@ type UserQueryerItf interface {
 	Update(ctx context.Context, user *model.UserResource) error
 	UpdatePicture(ctx context.Context, id int64, url string) error
 	UpdatePassword(ctx context.Context, id int64, passwd string) error
+	UpdateBalance(ctx context.Context, id int64, value int) error
 	UpdateActiveStatus(ctx context.Context, id int64) error
 }
 
@@ -149,6 +150,17 @@ func (q *userQueryer) UpdateActiveStatus(ctx context.Context, id int64) error {
 	}
 	if affected != 1 {
 		return ErrNoRowsAffected
+	}
+	return nil
+}
+
+func (q *userQueryer) UpdateBalance(ctx context.Context, id int64, value int) error {
+	query, args, err := sqlx.Named(qUpdateUserBalance, fiber.Map{"ID": id, "Value": value})
+	if err != nil {
+		return err
+	}
+	if _, err := q.ext.ExecContext(ctx, query, args...); err != nil {
+		return err
 	}
 	return nil
 }

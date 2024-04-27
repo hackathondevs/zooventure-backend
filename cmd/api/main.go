@@ -34,8 +34,8 @@ func main() {
 	rest.RegisterAuthHandler(authUsecase, validator, api)
 	userUsecase := usecase.NewUserUsecase(userRepo, supabaseImg, log)
 	rest.RegisterUserHandler(userUsecase, validator, api)
-
-	animalUsecase := usecase.NewAnimalUsecase()
+	enclosureRepo := repository.NewEnclosureRepository(db)
+	animalUsecase := usecase.NewAnimalUsecase(userRepo, enclosureRepo)
 	rest.RegisterAnimalHandler(animalUsecase, api)
 
 	if err := app.Listen(":" + os.Getenv("APP_PORT")); err != nil {
