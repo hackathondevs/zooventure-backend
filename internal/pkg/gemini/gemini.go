@@ -44,6 +44,8 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 		genai.Text("use this JSON format that i provide below for you to search its information"),
 		genai.Text(`{"name":"The animal name","latin":"The animal latin name","countryOfOrigin":"Countries, where, animal, origins, separated in, commas","characteristics": ["Animal","Unique","Characteristic"],"category": "Carnivore or Herbivore or Omnivore","lifespan":"animal lifespan","funfact": "animal's fun fact that not so many people know"}`),
 		genai.Text("Please only provide me with the data in json format in one-line, DONT output anything else"),
+		genai.Text("Please provide 5 charateristics for the animal"),
+		genai.Text("please using Indonesia Language as a value of json"),
 		genai.ImageData("jpeg", data),
 	)
 	if err != nil {
