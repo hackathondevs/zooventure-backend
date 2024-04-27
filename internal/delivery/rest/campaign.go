@@ -31,6 +31,8 @@ func RegisterCampaignHandler(
 	router.Delete("/:id<int>", middleware.BearerAuth("true"), campaignHandler.Delete)
 	router.Get("/_admin", middleware.BearerAuth("true"), campaignHandler.GetAllForAdmin)
 	router.Get("/_admin/:id<int>", middleware.BearerAuth("true"), campaignHandler.GetByIDForAdmin)
+	router.Get("/_submissions", middleware.BearerAuth("true"), campaignHandler.GetAllCampaignSubmission)
+	router.Patch("/_submissions/:id<int>/:userID<int>", middleware.BearerAuth("true"), campaignHandler.UpdateStatusCampaignSubmission)
 }
 
 func (h *campaignHandler) FetchAll(c *fiber.Ctx) error {
@@ -177,4 +179,31 @@ func (h *campaignHandler) GetByIDForAdmin(c *fiber.Ctx) error {
 		return err
 	}
 	return c.Status(fiber.StatusOK).JSON(campaign)
+}
+
+func (h *campaignHandler) GetAllCampaignSubmission(c *fiber.Ctx) error {
+	campaigns, err := h.usecase.GetAllCampaignSubmission(c.Context())
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(campaigns)
+}
+
+func (h *campaignHandler) UpdateStatusCampaignSubmission(c *fiber.Ctx) error {
+	id, err := strconv.ParseInt(c.Params("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	userID, err := strconv.ParseInt(c.Params("userID"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	value := c.Query("status")
+	err = h.usecase.UpdateStatusCampaignSubmission(c.Context(), id, userID, value)
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Submission updated"})
 }

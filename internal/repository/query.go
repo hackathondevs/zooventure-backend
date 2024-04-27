@@ -152,6 +152,28 @@ const (
 		(CampaignID, UserID, Submission)
 		VALUE
 		(:CampaignID, :UserID, :Submission);`
+	qGetAllCampaignSubmission = `
+		SELECT
+			CampaignID,
+			UserID,
+			Submission,
+			Status
+		FROM CampaignSubmissions
+	`
+	qUpdateStatusCampaignSubmission = `
+		UPDATE CampaignSubmissions
+		SET Status = :Status
+		WHERE CampaignID = :CampaignID AND UserID = :UserID;
+	`
+	qGetCampaignSubmissionByID = `
+		SELECT
+			CampaignID,
+			UserID,
+			Submission
+		FROM CampaignSubmissions
+		WHERE CampaignID = ? AND UserID = ?
+		LIMIT 1;
+	`
 
 	// Exchanges
 	qCreateExchange = `

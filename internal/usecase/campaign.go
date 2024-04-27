@@ -21,20 +21,24 @@ type CampaignUsecaseItf interface {
 	GetByID(ctx context.Context, id int64) (model.Campaign, error)
 	GetAll(ctx context.Context) ([]model.Campaign, error)
 	SubmitSubmission(ctx context.Context, id int64, req model.CampaignSubmissionRequest) error
+	GetAllCampaignSubmission(ctx context.Context) ([]model.CampaignSubmission, error)
+	UpdateStatusCampaignSubmission(ctx context.Context, id int64, userID int64, value string) error
 }
 
 type campaignUsecase struct {
 	campaignRepo repository.CampaignRepositoryItf
+	userRepo     repository.UserRepositoryItf
 	log          *logrus.Logger
 	supabase     *storage_go.Client
 }
 
 func NewCampaignUsecase(
 	campaignRepo repository.CampaignRepositoryItf,
+	userRepo repository.UserRepositoryItf,
 	log *logrus.Logger,
 	supabase *storage_go.Client,
 ) CampaignUsecaseItf {
-	return &campaignUsecase{campaignRepo, log, supabase}
+	return &campaignUsecase{campaignRepo, userRepo, log, supabase}
 }
 
 func (u *campaignUsecase) FetchAll(ctx context.Context) ([]model.Campaign, error) {
@@ -197,4 +201,51 @@ func (u *campaignUsecase) SubmitSubmission(ctx context.Context, id int64, req mo
 		return err
 	}
 	return client.Commit()
+}
+
+func (u *campaignUsecase) GetAllCampaignSubmission(ctx context.Context) ([]model.CampaignSubmission, error) {
+	client, err := u.campaignRepo.NewClient(false, nil)
+	if err != nil {
+		return nil, err
+	}
+	submissions, err := client.GetAllCampaignSubmission(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return submissions, nil
+}
+
+func (u *campaignUsecase) UpdateStatusCampaignSubmission(ctx context.Context, id int64, userID int64, value string) error {
+	campaignClient, err := u.campaignRepo.NewClient(true, nil)
+	if err != nil {
+		return err
+	}
+	defer campaignClient.Rollback()
+
+	submission, err := campaignClient.GetCampaignSubmissionByID(ctx, id, userID)
+	if err != nil {
+		return err
+	}
+
+	userClient, err := u.userRepo.NewClient(true, nil)
+	if err != nil {
+		return err
+	}
+	defer userClient.Rollback()
+
+	if value == "APPROVED" {
+		if err := userClient.UpdateBalance(ctx, userID, 100); err != nil {
+			return err
+		}
+	}
+
+	submission.Status = value
+	err = campaignClient.UpdateStatusCampaignSubmission(ctx, submission)
+	if err != nil {
+		return err
+	}
+	if err := campaignClient.Commit(); err != nil {
+		return err
+	}
+	return userClient.Commit()
 }

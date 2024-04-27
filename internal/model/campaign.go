@@ -27,4 +27,5 @@ type CampaignSubmission struct {
 	UserID     int64  `db:"UserID" json:"userId"`
 	CampaignID int64  `db:"CampaignID" json:"campaignId"`
 	Submission string `db:"Submission" json:"submission"`
+	Status     string `db:"Status" json:"status"`
 }

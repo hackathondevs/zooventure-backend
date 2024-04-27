@@ -172,8 +172,7 @@ func (h *userUsecase) Exchange(ctx context.Context, exchange model.ExchangeReque
 		return ErrInsufficientBalance
 	}
 
-	user.Balance -= int(exchange.Amount)
-	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), user.Balance); err != nil {
+	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), -int(exchange.Amount)); err != nil {
 		return err
 	}
 
@@ -194,7 +193,7 @@ func (h *userUsecase) Exchange(ctx context.Context, exchange model.ExchangeReque
 		return err
 	}
 
-	return nil
+	return userClient.Commit()
 }
 
 func (e *userUsecase) GetExchanges(ctx context.Context) ([]model.ExchangeCleanResource, error) {

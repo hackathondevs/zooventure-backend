@@ -42,7 +42,7 @@ func main() {
 	animalRepo := repository.NewAnimalRepository(db)
 	animalUsecase := usecase.NewAnimalUsecase(userRepo, animalRepo)
 	rest.RegisterAnimalHandler(animalUsecase, validator, api)
-	campaignUsecase := usecase.NewCampaignUsecase(campaignRepo, log, supabaseClient)
+	campaignUsecase := usecase.NewCampaignUsecase(campaignRepo, userRepo, log, supabaseClient)
 	rest.RegisterCampaignHandler(campaignUsecase, api, validator)
 	reportUsecase := usecase.NewReportUsecase(reportRepo, userRepo, supabaseClient)
 	rest.RegisterReportHandler(reportUsecase, validator, api)

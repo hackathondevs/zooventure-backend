@@ -30,6 +30,9 @@ type CampaignQueryerItf interface {
 	GetByID(ctx context.Context, id int64) (model.Campaign, error)
 	GetAll(ctx context.Context) ([]model.Campaign, error)
 	CreateSubmission(ctx context.Context, campaignSubmission model.CampaignSubmission) error
+	GetAllCampaignSubmission(ctx context.Context) ([]model.CampaignSubmission, error)
+	UpdateStatusCampaignSubmission(ctx context.Context, submission model.CampaignSubmission) error
+	GetCampaignSubmissionByID(ctx context.Context, id int64, userID int64) (model.CampaignSubmission, error)
 }
 
 type campaignQueryer struct {
@@ -154,4 +157,33 @@ func (q *campaignQueryer) CreateSubmission(ctx context.Context, campaignSubmissi
 	}
 	_, err = q.ext.ExecContext(ctx, query, args...)
 	return err
+}
+
+func (q *campaignQueryer) GetAllCampaignSubmission(ctx context.Context) ([]model.CampaignSubmission, error) {
+	var submissions []model.CampaignSubmission
+	if err := sqlx.SelectContext(ctx, q.ext, &submissions, qGetAllCampaignSubmission); err != nil {
+		return nil, err
+	}
+	return submissions, nil
+}
+
+func (q *campaignQueryer) UpdateStatusCampaignSubmission(ctx context.Context, submission model.CampaignSubmission) error {
+	query, args, err := sqlx.Named(qUpdateStatusCampaignSubmission, fiber.Map{
+		"UserID":     submission.UserID,
+		"CampaignID": submission.CampaignID,
+		"Status":     submission.Status,
+	})
+	if err != nil {
+		return err
+	}
+	_, err = q.ext.ExecContext(ctx, query, args...)
+	return err
+}
+
+func (q *campaignQueryer) GetCampaignSubmissionByID(ctx context.Context, id int64, userID int64) (model.CampaignSubmission, error) {
+	var submission model.CampaignSubmission
+	if err := sqlx.GetContext(ctx, q.ext, &submission, qGetCampaignSubmissionByID, id, userID); err != nil {
+		return model.CampaignSubmission{}, err
+	}
+	return submission, nil
 }
