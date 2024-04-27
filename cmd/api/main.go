@@ -28,9 +28,12 @@ func main() {
 	api := app.Group("/api")
 	rest.RegisterUtilsHandler(api)
 
+	supabaseClient := conf.NewSupabaseImage(log)
+
 	userRepo := repository.NewUserRepository(db)
 	verifRepo := repository.NewVerificationRepository(db)
 	merchantRepo := repository.NewMerchantRepository(db)
+	campaignRepo := repository.NewCampaignRepository(db)
 	authUsecase := usecase.NewAuthUsecase(userRepo, verifRepo, mailer, log)
 	rest.RegisterAuthHandler(authUsecase, validator, api)
 	userUsecase := usecase.NewUserUsecase(userRepo, merchantRepo, supabaseImg, log)
@@ -38,6 +41,8 @@ func main() {
 	enclosureRepo := repository.NewEnclosureRepository(db)
 	animalUsecase := usecase.NewAnimalUsecase(userRepo, enclosureRepo)
 	rest.RegisterAnimalHandler(animalUsecase, api)
+	campaignUsecase := usecase.NewCampaignUsecase(campaignRepo, log, supabaseClient)
+	rest.RegisterCampaignHandler(campaignUsecase, api, validator)
 
 	if err := app.Listen(":" + os.Getenv("APP_PORT")); err != nil {
 		log.Fatalf("Fail to start server: %v", err)

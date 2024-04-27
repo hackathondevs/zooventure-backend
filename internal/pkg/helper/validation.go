@@ -11,19 +11,19 @@ func ValidationError(err validator.FieldError) string {
 	case "harus ada":
 		return ""
 	case "ascii":
-		return "harus berupa ascii"
+		return "Harus berupa ascii"
 	case "alphanum":
-		return "harus berupa alfabet dan angka"
+		return "Harus berupa alfabet dan angka"
 	case "alphanumunicode":
-		return "harus berupa unicode"
+		return "Harus berupa unicode"
 	case "email":
-		return "harus berupa email yang valid"
+		return "Harus berupa email yang valid"
 	case "min":
-		return fmt.Sprintf("minimal karakter adalah %s", err.Param())
+		return fmt.Sprintf("Minimal memiliki panjang %s karakter", err.Param())
 	case "eqfield":
-		return fmt.Sprintf("hharus sama dengan %s", err.Param())
+		return fmt.Sprintf("Harus sama dengan %s", err.Param())
 	case "url":
-		return "harus berupa URL"
+		return "Harus berupa URL"
 	default:
 		return ""
 	}
