@@ -22,6 +22,7 @@ func RegisterAnimalHandler(
 
 	router = router.Group("/animals")
 	router.Post("/_whatIs", middleware.BearerAuth("false"), animalHandler.whatIs)
+	router.Get("", middleware.BearerAuth("false"), animalHandler.fecthAll)
 }
 
 func (h *animalHandler) whatIs(c *fiber.Ctx) error {
@@ -42,4 +43,12 @@ func (h *animalHandler) whatIs(c *fiber.Ctx) error {
 		return err
 	}
 	return c.Status(fiber.StatusOK).JSON(animal)
+}
+
+func (h *animalHandler) fecthAll(c *fiber.Ctx) error {
+	animals, err := h.animalUsecase.FetchAll(c.Context())
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(animals)
 }

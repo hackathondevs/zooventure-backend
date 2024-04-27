@@ -11,6 +11,7 @@ import (
 
 type AnimalUsecaseItf interface {
 	PredictAnimal(ctx context.Context, data *model.PredictAnimalReq) (model.AnimalResource, error)
+	FetchAll(ctx context.Context) ([]model.AnimalResource, error)
 }
 
 type animalUsecase struct {
@@ -57,4 +58,21 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	}
 
 	return animal.Resource(), nil
+}
+
+// FetchAll implements AnimalUsecaseItf.
+func (u *animalUsecase) FetchAll(ctx context.Context) ([]model.AnimalResource, error) {
+	animalClient, err := u.animalRepo.NewClient(false, nil)
+	if err != nil {
+		return nil, err
+	}
+	animalsDat, err := animalClient.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var animals []model.AnimalResource
+	for _, animal := range animalsDat {
+		animals = append(animals, animal.Resource())
+	}
+	return animals, nil
 }

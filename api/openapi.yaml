@@ -536,6 +536,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Animal"
+  /api/animals:
+    get:
+      tags:
+        - animals
+      operationId: getAllAnimals
+      security:
+        - PasetoAuth: []
+      summary: Fetch All Animals
+      description: Get all animals
+      responses:
+        "200":
+          description: Profile picture successfully uploaded
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Animal"
+                example:
+                  - id: 1
+                    picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z
+                    name: Harimau Sumatera
+                    latin: Panthera Tigris
+                    origin: Sumatera, Indonesia
+                    characteristic: Harimau Sumatera adalah salah satu subspesies harimau yang hanya ditemukan di habitat asli pulau Sumatera, yang merupakan bagian dari Indonesia.
+                    diet: Karnivora
+                    lifespan: 20 Tahun
+                    lat: 112.73602656088153
+                    long: -7.296691437475779
+                  - id: 2
+                    picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z
+                    name: Harimau Sumatera
+                    latin: Panthera Tigris
+                    origin: Sumatera, Indonesia
+                    characteristic: Harimau Sumatera adalah salah satu subspesies harimau yang hanya ditemukan di habitat asli pulau Sumatera, yang merupakan bagian dari Indonesia.
+                    diet: Karnivora
+                    lifespan: 20 Tahun
+                    lat: 112.73602656088153
+                    long: -7.296691437475779
+                  - id: 3
+                    picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z
+                    name: Harimau Sumatera
+                    latin: Panthera Tigris
+                    origin: Sumatera, Indonesia
+                    characteristic: Harimau Sumatera adalah salah satu subspesies harimau yang hanya ditemukan di habitat asli pulau Sumatera, yang merupakan bagian dari Indonesia.
+                    diet: Karnivora
+                    lifespan: 20 Tahun
+                    lat: 112.73602656088153
+                    long: -7.296691437475779
 components:
   schemas:
     Error:
@@ -598,8 +647,8 @@ components:
         long:
           type: number
       example:
-        id: 1,
-        picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z,
+        id: 1
+        picture: https://aoyfqtbcektucqlryxvj.supabase.co/storage/v1/object/public/bucket/harimau.jpg?t=2024-04-27T12%3A44%3A04.744Z
         name: Harimau Sumatera
         latin: Panthera Tigris
         origin: Sumatera, Indonesia

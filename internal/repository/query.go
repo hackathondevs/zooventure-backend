@@ -224,12 +224,12 @@ const (
 	`
 	// Animals
 	qGetAllAnimals = `
-	    SELECT,
+	    SELECT
 			ID,
 			Name,
 			Latin,
 			Origin,
-			Characteristics,
+			Characteristic,
 			Diet,
 			Lifespan,
 			EnclosureCoordinate
