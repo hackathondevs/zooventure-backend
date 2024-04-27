@@ -15,6 +15,6 @@ type Animal struct {
 
 type PredictAnimalRequest struct {
 	Picture *multipart.FileHeader `form:"-"`
-	Lat     float64               `form:"lat" validate:"required"`
-	Long    float64               `form:"long" validate:"required"`
+	Lat     float64               `form:"lat" validate:"required,latitude"`
+	Long    float64               `form:"long" validate:"required,longitude"`
 }

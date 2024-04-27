@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -70,11 +69,6 @@ func (u *authUsecase) RegisterUser(ctx context.Context, userReq model.UserSignup
 	if err != nil {
 		switch {
 		case errors.As(err, &mysqlErr) && mysqlErr.Number == 1062:
-			if strings.Contains(strings.ToLower(mysqlErr.Message), "name") {
-				return response.NewCustomError(fiber.StatusConflict, fiber.Map{
-					"name": ErrNameExist.Error(),
-				})
-			}
 			return response.NewCustomError(fiber.StatusConflict, fiber.Map{
 				"email": ErrEmailExist.Error(),
 			})
