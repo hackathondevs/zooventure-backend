@@ -248,7 +248,8 @@ const (
 			EnclosureCoordinate,
 			ST_Distance_Sphere(EnclosureCoordinate, POINT(:Longitude, :Latitude)) AS Distance
 		FROM Animals
-		WHERE Name LIKE :Name
+		WHERE Name LIKE :Name AND
+		Distance < 20
 		ORDER BY Distance ASC
 		LIMIT 1;
 	`
