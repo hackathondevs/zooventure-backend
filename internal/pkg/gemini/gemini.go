@@ -57,6 +57,38 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, picture []byte) (stri
 	return formattedContent.String(), nil
 }
 
+func (g *GeminiAI) GenerateFact(ctx context.Context, animal string) (string, error) {
+	geminiApiKey := os.Getenv("GEMINI_API_KEY")
+	geminiTypeModel := "gemini-pro"
+	client, err := genai.NewClient(ctx, option.WithAPIKey(geminiApiKey))
+	if err != nil {
+		log.Fatal(err)
+	}
+	model := client.GenerativeModel(geminiTypeModel)
+	geminiAi := &GeminiAI{
+		model: model,
+	}
+	content, err := geminiAi.model.GenerateContent(ctx,
+		genai.Text("Give me a fun fact about "+animal),
+		genai.Text("Just give me the answer, and not anything else"),
+		genai.Text("Answer it in indonesian language"),
+	)
+	if err != nil {
+		return "", err
+	}
+	var formattedContent strings.Builder
+	if content != nil && content.Candidates != nil {
+		for _, cand := range content.Candidates {
+			if cand.Content != nil {
+				for _, part := range cand.Content.Parts {
+					formattedContent.WriteString(fmt.Sprintf("%v", part))
+				}
+			}
+		}
+	}
+	return formattedContent.String(), nil
+}
+
 func (g *GeminiAI) GenerateTrivia(ctx context.Context, animal string) (model.Trivia, error) {
 	content, err := g.model.GenerateContent(ctx,
 		genai.Text("Make me a single trivia quiz about "+animal+" with 3 possible answer, use the following JSON structure for the output"),

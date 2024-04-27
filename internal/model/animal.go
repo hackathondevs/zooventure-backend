@@ -26,6 +26,7 @@ type AnimalResource struct {
 	Lifespan       string  `json:"lifespan"`
 	Lat            float64 `json:"lat"`
 	Long           float64 `json:"long"`
+	FunFact        string  `json:"funfact"`
 }
 
 type PredictAnimalReq struct {

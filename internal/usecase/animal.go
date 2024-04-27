@@ -57,8 +57,14 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	if err != nil {
 		return model.AnimalResource{}, err
 	}
+	funfact, err := u.geminiModel.GenerateFact(ctx, animal.Name)
+	if err != nil {
+		return model.AnimalResource{}, err
+	}
+	animalRes := animal.Resource()
+	animalRes.FunFact = funfact
 
-	return animal.Resource(), nil
+	return animalRes, nil
 }
 
 func (u *animalUsecase) FetchAll(ctx context.Context) ([]model.AnimalResource, error) {
