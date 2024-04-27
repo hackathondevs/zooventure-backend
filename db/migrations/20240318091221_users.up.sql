@@ -35,4 +35,14 @@ VALUE (
     FALSE,
     TRUE,
     10000
+),
+(
+    "foo.bar@gmail.com",
+    "$2a$10$clEPEcPO7s5TnfJdgd0FxuNW8oofo.s/uEExeSP7ZYfU7jvhuSRN2",
+    "Foo Bar",
+    "-",
+    TRUE,
+    TRUE,
+    FALSE,
+    0
 );

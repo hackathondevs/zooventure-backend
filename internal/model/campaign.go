@@ -18,3 +18,13 @@ type CampaignRequest struct {
 	Description string                `form:"description" validate:"required"`
 	Reward      int                   `form:"reward" validate:"required"`
 }
+
+type CampaignSubmissionRequest struct {
+	Submission string `json:"submission" validate:"required"`
+}
+
+type CampaignSubmission struct {
+	UserID     int64  `db:"UserID" json:"userId"`
+	CampaignID int64  `db:"CampaignID" json:"campaignId"`
+	Submission string `db:"Submission" json:"submission"`
+}

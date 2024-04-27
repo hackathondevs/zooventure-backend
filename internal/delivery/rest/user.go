@@ -21,13 +21,13 @@ func RegisterUserHandler(
 ) {
 	userHandler := userHandler{usecase, validator}
 	router = router.Group("/users")
-	router.Get("", middleware.BearerAuth, userHandler.profile)
-	router.Put("", middleware.BearerAuth, userHandler.updateProfile)
-	router.Patch("", middleware.BearerAuth, userHandler.resetPassword)
-	router.Post("/_uploadProfilePicture", middleware.BearerAuth, userHandler.updateProfilePicture)
-	router.Delete("/_deleteProfilePicture", middleware.BearerAuth, userHandler.deleteProfilePicture)
-	router.Post("_exchange", middleware.BearerAuth, userHandler.exchange)
-	router.Get("_exchanges", middleware.BearerAuth, userHandler.getExchanges)
+	router.Get("", middleware.BearerAuth("false"), userHandler.profile)
+	router.Put("", middleware.BearerAuth("false"), userHandler.updateProfile)
+	router.Patch("", middleware.BearerAuth("false"), userHandler.resetPassword)
+	router.Post("/_uploadProfilePicture", middleware.BearerAuth("false"), userHandler.updateProfilePicture)
+	router.Delete("/_deleteProfilePicture", middleware.BearerAuth("false"), userHandler.deleteProfilePicture)
+	router.Post("_exchange", middleware.BearerAuth("false"), userHandler.exchange)
+	router.Get("_exchanges", middleware.BearerAuth("false"), userHandler.getExchanges)
 }
 
 func (h *userHandler) profile(c *fiber.Ctx) error {

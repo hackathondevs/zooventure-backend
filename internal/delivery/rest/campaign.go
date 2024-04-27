@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/mirzahilmi/hackathon/internal/delivery/middleware"
 	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
@@ -22,13 +23,14 @@ func RegisterCampaignHandler(
 ) {
 	campaignHandler := campaignHandler{usecase, validator}
 	router = router.Group("/campaigns")
-	router.Get("", campaignHandler.FetchAll)
-	router.Get("/:id<int>", campaignHandler.FetchSingle)
-	router.Post("", campaignHandler.Create)
-	router.Patch("/:id<int>", campaignHandler.Update)
-	router.Delete("/:id<int>", campaignHandler.Delete)
-	router.Get("/_admin", campaignHandler.GetAllForAdmin)
-	router.Get("/_admin/:id<int>", campaignHandler.GetByIDForAdmin)
+	router.Get("", middleware.BearerAuth("false"), campaignHandler.FetchAll)
+	router.Get("/:id<int>", middleware.BearerAuth("false"), campaignHandler.FetchSingle)
+	router.Post("/_submission/:id<int>", middleware.BearerAuth("false"), campaignHandler.SubmitSubmission)
+	router.Post("", middleware.BearerAuth("true"), campaignHandler.Create)
+	router.Patch("/:id<int>", middleware.BearerAuth("true"), campaignHandler.Update)
+	router.Delete("/:id<int>", middleware.BearerAuth("true"), campaignHandler.Delete)
+	router.Get("/_admin", middleware.BearerAuth("true"), campaignHandler.GetAllForAdmin)
+	router.Get("/_admin/:id<int>", middleware.BearerAuth("true"), campaignHandler.GetByIDForAdmin)
 }
 
 func (h *campaignHandler) FetchAll(c *fiber.Ctx) error {
@@ -49,6 +51,29 @@ func (h *campaignHandler) FetchSingle(c *fiber.Ctx) error {
 		return err
 	}
 	return c.Status(fiber.StatusOK).JSON(campaign)
+}
+
+func (h *campaignHandler) SubmitSubmission(c *fiber.Ctx) error {
+	id, err := strconv.ParseInt(c.Params("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	var req model.CampaignSubmissionRequest
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+
+	if err := h.validator.Struct(&req); err != nil {
+		return err
+	}
+
+	err = h.usecase.SubmitSubmission(c.Context(), id, req)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "Submission uploaded successfully"})
 }
 
 func (h *campaignHandler) Create(c *fiber.Ctx) error {

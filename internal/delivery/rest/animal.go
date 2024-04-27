@@ -15,7 +15,7 @@ func RegisterAnimalHandler(animalUsecase usecase.AnimalUsecaseItf, router fiber.
 	animalHandler := animalHandler{animalUsecase}
 
 	router = router.Group("/animals")
-	router.Post("/_whatIs", middleware.BearerAuth, animalHandler.whatIs)
+	router.Post("/_whatIs", middleware.BearerAuth("false"), animalHandler.whatIs)
 }
 
 func (h *animalHandler) whatIs(c *fiber.Ctx) error {

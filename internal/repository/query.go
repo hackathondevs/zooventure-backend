@@ -10,7 +10,8 @@ const (
 			Name,
 			ProfilePicture,
 			Active,
-			Balance
+			Balance,
+			Admin
 		FROM Users
 		WHERE %s = ?
 		LIMIT 1;
@@ -158,6 +159,11 @@ const (
 			Reward
 		FROM Campaigns
 	`
+	qCreateSubmission = `
+		INSERT INTO CampaignSubmissions
+		(CampaignID, UserID, Submission)
+		VALUE
+		(:CampaignID, :UserID, :Submission);`
 
 	// Exchanges
 	qCreateExchange = `

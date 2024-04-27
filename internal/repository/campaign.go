@@ -29,6 +29,7 @@ type CampaignQueryerItf interface {
 	Delete(ctx context.Context, id int64) error
 	GetByID(ctx context.Context, id int64) (model.Campaign, error)
 	GetAll(ctx context.Context) ([]model.Campaign, error)
+	CreateSubmission(ctx context.Context, campaignSubmission model.CampaignSubmission) error
 }
 
 type campaignQueryer struct {
@@ -140,4 +141,17 @@ func (q *campaignQueryer) GetAll(ctx context.Context) ([]model.Campaign, error) 
 		return nil, err
 	}
 	return campaigns, nil
+}
+
+func (q *campaignQueryer) CreateSubmission(ctx context.Context, campaignSubmission model.CampaignSubmission) error {
+	query, args, err := sqlx.Named(qCreateSubmission, fiber.Map{
+		"CampaignID": campaignSubmission.CampaignID,
+		"UserID":     campaignSubmission.UserID,
+		"Submission": campaignSubmission.Submission,
+	})
+	if err != nil {
+		return err
+	}
+	_, err = q.ext.ExecContext(ctx, query, args...)
+	return err
 }

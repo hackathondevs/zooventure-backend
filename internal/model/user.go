@@ -13,6 +13,7 @@ type UserResource struct {
 	ProfilePicture string `db:"ProfilePicture"`
 	Name           string `db:"Name"`
 	Active         bool   `db:"Active"`
+	Admin          bool   `db:"Admin"`
 	Balance        int    `db:"Balance"`
 }
 

@@ -20,6 +20,7 @@ type CampaignUsecaseItf interface {
 	Delete(ctx context.Context, id int64) error
 	GetByID(ctx context.Context, id int64) (model.Campaign, error)
 	GetAll(ctx context.Context) ([]model.Campaign, error)
+	SubmitSubmission(ctx context.Context, id int64, req model.CampaignSubmissionRequest) error
 }
 
 type campaignUsecase struct {
@@ -176,4 +177,24 @@ func (u *campaignUsecase) GetAll(ctx context.Context) ([]model.Campaign, error) 
 		return nil, err
 	}
 	return campaigns, nil
+}
+
+func (u *campaignUsecase) SubmitSubmission(ctx context.Context, id int64, req model.CampaignSubmissionRequest) error {
+	client, err := u.campaignRepo.NewClient(true, nil)
+	if err != nil {
+		return err
+	}
+	defer client.Rollback()
+
+	submission := model.CampaignSubmission{
+		CampaignID: id,
+		UserID:     ctx.Value(ClientID).(int64),
+		Submission: req.Submission,
+	}
+
+	err = client.CreateSubmission(ctx, submission)
+	if err != nil {
+		return err
+	}
+	return client.Commit()
 }

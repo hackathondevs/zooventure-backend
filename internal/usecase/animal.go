@@ -30,6 +30,9 @@ func NewAnimalUsecase(
 
 func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAnimalRequest) (model.Animal, error) {
 	file, err := raw.Picture.Open()
+	if err != nil {
+		return model.Animal{}, err
+	}
 	defer file.Close()
 	if err != nil {
 		return model.Animal{}, err
