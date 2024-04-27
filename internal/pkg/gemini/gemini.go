@@ -39,19 +39,11 @@ func NewGeminiAI() *GeminiAI {
 
 func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile string) (model.Animal, error) {
 	prompt, err := g.model.GenerateContent(ctx,
-		genai.Text("can you describe this image based and show with format json that i perform and if the image is not animal please fill the json with not animal"),
-		genai.Text("the json using this format:"),
-		genai.Text("{"),
-		genai.Text("name : string,"),
-		genai.Text("latinName : string,"),
-		genai.Text("countryOfOrigin : string,"),
-		genai.Text("characteristics : array of string (max is 5 charater),"),
-		genai.Text("category : string (Karnivora or Omnivora or Herbivora),"),
-		genai.Text("lifespan : string,"),
-		genai.Text("funfact : string (fun fact about the animal),"),
-		genai.Text("}"),
-		genai.Text("if the image is not animal and dont have any animal in the image please just fill the json stringfields with not animal"),
-		genai.Text("Please only provide me with the data in json format one-line, DONT output anything else"),
+		genai.Text("Forget ANY CONTEXT before this chat, and listen carefully what i want you to do"),
+		genai.Text("can you describe this animal picture, if the picture does not seem to be an animal picture, just fill out all the string field with \"not animal\""),
+		genai.Text("use this JSON format that i provide below for you to search its information"),
+		genai.Text(`{"name":"The animal name","latin":"The animal latin name","countryOfOrigin":"Countries, where, animal, origins, separated in, commas","characteristics": ["Animal","Unique","Characteristic"],"category": "Carnivore or Herbivore or Omnivore","lifespan":"animal lifespan","funfact": "animal's fun fact that not so many people know"}`),
+		genai.Text("Please only provide me with the data in json format in one-line, DONT output anything else"),
 		genai.ImageData("jpeg", data),
 	)
 	if err != nil {

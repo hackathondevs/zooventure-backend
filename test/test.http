@@ -1,5 +1,5 @@
-@baseURL = https://hackfest.miruza.my.id
-@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNFQwNzozNDoxN1oiLCJpYXQiOiIyMDI0LTA0LTI3VDA3OjM0OjE3WiIsImlzcyI6Imh0dHBzOi8vaGFja2Zlc3QubWlydXphLm15LmlkIiwibmFtZSI6Ik90dGVyIFdob3BwZXIiLCJuYmYiOiIyMDI0LTA0LTI3VDA3OjM0OjE3WiIsInN1YiI6IjEiffCiHQ1sJi__MneR73dzLeERlHmh1YNI2CcRaMHLwRE9dC2TpqwG4scMK5gK-Wb35-vAQnp7jGwUkVRwRGHZ8AI
+@baseURL = http://localhost:8080
+@token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNFQxNDo1MTo1OSswNzowMCIsImlhdCI6IjIwMjQtMDQtMjdUMTQ6NTE6NTkrMDc6MDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJuYW1lIjoiT3R0ZXIgV2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjdUMTQ6NTE6NTkrMDc6MDAiLCJzdWIiOiI1In1-jB_q9kgYPdw3NftjLwjxfwmusZxaGalOyx7_hzbGvy5zT32h8--HJyqXRrujsrMUz8Kyf9tQ7pSoV4987pgK
 @email = otter.whopper@gmail.com
 @password = 12345678
 
@@ -60,8 +60,8 @@ Content-Disposition: form-data; name="long";
 112.73693682351974
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="picture"; filename="picture.png"
-Content-Type: image/png;
+Content-Type: image/jpeg;
 
-< ./panda.jpg
+< ./chicken.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
