@@ -53,6 +53,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAni
 	if distance < 16 {
 		return prediction, nil
 	}
+	prediction.GotBonus = true
 	userClient, err := u.userRepo.NewClient(false, nil)
 	if err != nil {
 		return model.Animal{}, err

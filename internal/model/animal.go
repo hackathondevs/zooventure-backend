@@ -10,6 +10,7 @@ type Animal struct {
 	Category        string   `json:"category"`
 	Lifespan        string   `json:"lifespan"`
 	Funfact         string   `json:"funfact"`
+	GotBonus        bool     `json:"gotBonus"`
 }
 
 type PredictAnimalRequest struct {
