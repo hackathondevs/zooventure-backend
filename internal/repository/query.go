@@ -195,5 +195,41 @@ const (
 			Code
 		FROM Merchants
 		WHERE %s = ?
-		`
+	`
+
+	// Reports
+	qCreateReport = `
+		INSERT INTO Reports
+		(Picture, Description, Location)
+		VALUE
+		(:Picture, :Description, :Location);
+	`
+	qGetReports = `
+		SELECT
+			ID,
+			Picture,
+			Description,
+			Location,
+			CreatedAt,
+			Action
+		FROM Reports
+		ORDER BY CreatedAt DESC;
+	`
+	qUpdateReport = `
+		UPDATE Reports
+		SET
+			Action = :Action
+		WHERE ID = :ID;
+	`
+	qGetReportByID = `
+		SELECT
+			ID,
+			Description,
+			Location,
+			CreatedAt,
+			Action
+		FROM Reports
+		WHERE ID = ?
+		LIMIT 1;
+	`
 )
