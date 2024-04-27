@@ -58,7 +58,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, raw *model.PredictAni
 	if err != nil {
 		return model.Animal{}, err
 	}
-	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), 100); err != nil {
+	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), 50); err != nil {
 		return model.Animal{}, err
 	}
 	return prediction, nil
