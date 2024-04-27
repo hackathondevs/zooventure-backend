@@ -1,6 +1,6 @@
 @baseURL = http://localhost:8080
 @token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wM1QwNzo1ODo1MCswNzowMCIsImlhdCI6IjIwMjQtMDQtMjZUMDc6NTg6NTArMDc6MDAiLCJpc3MiOiIiLCJuYW1lIjoib3R0ZXIgd2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjZUMDc6NTg6NTArMDc6MDAiLCJzdWIiOiIxIn3MvIEvk9GPCgYd_KmBuoZcIaiIDrLmrObTT5adskT4DUM_0Kvl8W7aXBFllSS_QaCwkhTIJqxA9UVp2A_pVD0I
-@email = exquisitemirza@gmail.com
+@email = otter.whopper@gmail.com
 @password = 12345678
 
 GET {{baseURL}}/api/status
@@ -9,12 +9,12 @@ Accept: application/json
 ### User Sign-up
 POST {{baseURL}}/api/users
 Content-Type: application/json
-
+    
 {
     "email": "{{email}}",
     "password": "{{password}}",
     "passwordConfirmation": "{{password}}",
-    "name": "exquisite"
+    "name": "Otter Whopper"
 }
 
 ### User Verification

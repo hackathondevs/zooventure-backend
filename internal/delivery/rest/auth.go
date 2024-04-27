@@ -52,7 +52,7 @@ func (h *authHandler) verify(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	return c.Render("success.html", nil)
 }
 
 func (h *authHandler) login(c *fiber.Ctx) error {
