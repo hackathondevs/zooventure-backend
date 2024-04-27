@@ -18,6 +18,12 @@ tags:
     description: Ways to authenticate to the server
   - name: users
     description: All about `users` as a resource
+  - name: animals
+    description: All about animals
+  - name: campaigns
+    description: All about campaigns
+  - name: notifications
+    description: All about notifications
 paths:
   /api/status:
     get:
