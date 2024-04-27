@@ -73,12 +73,8 @@ func (q *userQueryer) Ext() sqlx.ExtContext {
 }
 
 func (q *userQueryer) GetByParam(ctx context.Context, param, value interface{}) (model.UserResource, error) {
-	row := q.ext.QueryRowxContext(ctx, fmt.Sprintf(queryGetUserByParam, param), value)
-	if err := row.Err(); err != nil {
-		return model.UserResource{}, err
-	}
 	var user model.UserResource
-	if err := row.StructScan(&user); err != nil {
+	if err := sqlx.GetContext(ctx, q.ext, &user, fmt.Sprintf(queryGetUserByParam, param), value); err != nil {
 		return model.UserResource{}, err
 	}
 	return user, nil

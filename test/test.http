@@ -1,6 +1,6 @@
 @baseURL = http://localhost:8080
 @token = v4.public.eyJhdWQiOiIqIiwiZXhwIjoiMjAyNC0wNS0wNFQxMjoxMDoxMSswNzowMCIsImlhdCI6IjIwMjQtMDQtMjdUMTI6MTA6MTErMDc6MDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJuYW1lIjoiT3R0ZXIgV2hvcHBlciIsIm5iZiI6IjIwMjQtMDQtMjdUMTI6MTA6MTErMDc6MDAiLCJzdWIiOiI1In3jqn9t7lKtgLlBDmk-b194NvgZCDwNlnfks4HcuK68eiVBppHYwoGuIBybzXbDX5CHLS5uUPfhfJkn6Xip3AsA
-@email = otter.whopper@gmail.com
+@email = exquisitemirza@gmail.com
 @password = 12345678
 
 GET {{baseURL}}/api/status
@@ -14,7 +14,7 @@ Content-Type: application/json
     "email": "{{email}}",
     "password": "{{password}}",
     "passwordConfirmation": "{{password}}",
-    "name": "Otter Whopper"
+    "name": "Mirza"
 }
 
 ### User Log-in
