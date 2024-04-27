@@ -12,4 +12,5 @@ var (
 	ErrIDNotNumeric         = errors.New("ID is not numeric")
 	ErrInsufficientBalance  = errors.New("Insufficient balance")
 	ErrMerchantNotExist     = errors.New("Merchant not exist")
+	ErrCampaignNotExist     = errors.New("Campaign not exist")
 )

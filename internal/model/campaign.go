@@ -1,5 +1,7 @@
 package model
 
+import "mime/multipart"
+
 type Campaign struct {
 	ID          int64  `db:"ID" json:"id,omitempty"`
 	Picture     string `db:"Picture" json:"picture"`
@@ -8,4 +10,11 @@ type Campaign struct {
 	Reward      int    `db:"Reward" json:"reward"`
 	Submitted   bool   `db:"Submitted" json:"submitted"`
 	Submission  string `db:"Submission" json:"submission,omitempty"`
+}
+
+type CampaignRequest struct {
+	Picture     *multipart.FileHeader `form:"picture" validate:"required"`
+	Title       string                `form:"title" validate:"required"`
+	Description string                `form:"description" validate:"required"`
+	Reward      int                   `form:"reward" validate:"required"`
 }

@@ -168,16 +168,7 @@ func (h *userUsecase) Exchange(ctx context.Context, exchange model.ExchangeReque
 		return err
 	}
 
-	defer func() error {
-		if err != nil {
-			if err := userClient.Rollback(); err != nil {
-				return err
-			}
-			return err
-		}
-		userClient.Commit()
-		return nil
-	}()
+	defer userClient.Rollback()
 
 	user, err := userClient.GetByParam(ctx, "ID", ctx.Value(ClientID).(int64))
 	if err != nil {

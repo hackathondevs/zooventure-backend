@@ -91,7 +91,7 @@ const (
 	`
 
 	// Campaign
-	qGetAllCampaign = `
+	qGetAllCampaignByUserID = `
 		SELECT 
 		Campaigns.ID, 
 		Campaigns.Picture, 
@@ -117,6 +117,46 @@ const (
 		ON CampaignSubmissions.CampaignID = Campaigns.ID
 		WHERE Campaigns.ID = ? AND CampaignSubmissions.UserID = ?
 		LIMIT 1;
+	`
+	qCreateCampaign = `
+		INSERT INTO Campaigns 
+		(Picture, Title, Description, Reward)
+		VALUE 
+		(:Picture, :Title, :Description, :Reward);
+	`
+	qUpdateCampaign = `
+		UPDATE 
+			Campaigns
+		SET 
+			Picture = :Picture, 
+			Title = :Title, 
+			Description = :Description, 
+			Reward = :Reward
+		WHERE ID = :ID;
+	`
+	qDeleteCampaign = `
+		DELETE FROM Campaigns
+		WHERE ID = ?;
+	`
+	qGetCampaignByID = `
+		SELECT
+			ID,
+			Picture,
+			Title,
+			Description,
+			Reward
+		FROM Campaigns
+		WHERE ID = ?
+		LIMIT 1;
+	`
+	qGetAllCampaign = `
+		SELECT
+			ID,
+			Picture,
+			Title,
+			Description,
+			Reward
+		FROM Campaigns
 	`
 
 	// Exchanges
