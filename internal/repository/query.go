@@ -9,7 +9,8 @@ const (
 			Password,
 			Name,
 			ProfilePicture,
-			Active
+			Active,
+			Balance
 		FROM Users
 		WHERE %s = ?
 		LIMIT 1;
@@ -29,7 +30,7 @@ const (
 	qUpdateUserProfile = `
 		UPDATE Users
 		SET Name = :Name
-		WHERE ID = ?;
+		WHERE ID = :ID;
 	`
 	qUpdateUserField = `
 		UPDATE Users
@@ -79,13 +80,45 @@ const (
 
 	// Enclosure
 	qGetAllEnclosure = `
-	    SELECT Name, Coordinate
+		SELECT Name, Coordinate
 		FROM Enclosures;
 	`
 	qFetchDistanceToEnclosure = `
 		SELECT ST_Distance_Sphere(Coordinate, POINT(:Longitude, :Latitude)) AS Distance 
 		FROM Enclosures
 		ORDER BY Distance ASC
+		LIMIT 1;
+	`
+	// Exchanges
+	qCreateExchange = `
+		INSERT INTO Exchanges 
+		(UserID, MerchantID, Amount, Date, Status)
+		VALUE (:UserID, :MerchantID, :Amount, :Date, :Status);
+	`
+	qGetExchanges = `
+		SELECT
+			e.ID AS ID,
+			e.UserID AS UserID,
+			e.Amount AS Amount,
+			e.Date AS Date,
+			e.Status AS Status,
+			m.ID AS MerchantID,
+			m.Name AS MerchantName,
+			m.Code AS MerchantCode
+			FROM Exchanges e
+			JOIN Merchants m ON e.MerchantID = m.ID
+			WHERE %s  = ?
+			ORDER BY e.CreatedAt DESC;
+	`
+
+	// Merchants
+	qGetMerchantByParam = `
+		SELECT
+			ID,
+			Name,
+			Code
+		FROM Merchants
+		WHERE %s = ?
 		LIMIT 1;
 	`
 )

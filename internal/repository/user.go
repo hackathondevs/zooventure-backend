@@ -30,6 +30,8 @@ type UserQueryerItf interface {
 	UpdatePassword(ctx context.Context, id int64, passwd string) error
 	UpdateBalance(ctx context.Context, id int64, value int) error
 	UpdateActiveStatus(ctx context.Context, id int64) error
+	CreateExchange(ctx context.Context, exchange *model.ExchangeResource) error
+	GetExchanges(ctx context.Context, param, value interface{}) ([]model.ExchangeCleanResource, error)
 }
 
 type userQueryer struct {
@@ -163,4 +165,41 @@ func (q *userQueryer) UpdateBalance(ctx context.Context, id int64, value int) er
 		return err
 	}
 	return nil
+}
+
+func (q *userQueryer) CreateExchange(ctx context.Context, exchange *model.ExchangeResource) error {
+	query, args, err := sqlx.Named(qCreateExchange,
+		fiber.Map{
+			"MerchantID": exchange.MerchantID,
+			"UserID":     exchange.UserID,
+			"Amount":     exchange.Amount,
+			"Date":       exchange.Date,
+			"Status":     exchange.Status,
+		})
+	if err != nil {
+		return err
+	}
+	_, err = q.ext.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (q *userQueryer) GetExchanges(ctx context.Context, param, value interface{}) ([]model.ExchangeCleanResource, error) {
+	rows, err := q.ext.QueryxContext(ctx, fmt.Sprintf(qGetExchanges, param), value)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var exchanges []model.ExchangeCleanResource
+	for rows.Next() {
+		var exchange model.ExchangeResource
+		if err := rows.StructScan(&exchange); err != nil {
+			return nil, err
+		}
+		exchanges = append(exchanges, exchange.Clean())
+	}
+	return exchanges, nil
 }

@@ -26,20 +26,24 @@ type UserUsecaseItf interface {
 	UpdateUserProfile(ctx context.Context, user *model.UserCleanResource) error
 	ChangePicture(ctx context.Context, picture *multipart.FileHeader) error
 	DeletePicture(ctx context.Context) error
+	Exchange(ctx context.Context, exchange model.ExchangeRequest) error
+	GetExchanges(ctx context.Context) ([]model.ExchangeCleanResource, error)
 }
 
 type userUsecase struct {
-	userRepo    repository.UserRepositoryItf
-	supabaseImg *storage_go.Client
-	log         *logrus.Logger
+	userRepo     repository.UserRepositoryItf
+	merchantRepo repository.MerchantRepositoryItf
+	supabaseImg  *storage_go.Client
+	log          *logrus.Logger
 }
 
 func NewUserUsecase(
 	userRepo repository.UserRepositoryItf,
+	merchantRepo repository.MerchantRepositoryItf,
 	supabaseImg *storage_go.Client,
 	log *logrus.Logger,
 ) UserUsecaseItf {
-	return &userUsecase{userRepo, supabaseImg, log}
+	return &userUsecase{userRepo, merchantRepo, supabaseImg, log}
 }
 
 func (u *userUsecase) GetUserProfile(ctx context.Context) (model.UserCleanResource, error) {
@@ -149,4 +153,74 @@ func (u *userUsecase) DeletePicture(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (h *userUsecase) Exchange(ctx context.Context, exchange model.ExchangeRequest) error {
+	var err error
+
+	userClient, err := h.userRepo.NewClient(true, nil)
+	if err != nil {
+		return err
+	}
+
+	merchantClient, err := h.merchantRepo.NewClient(false, nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() error {
+		if err != nil {
+			if err := userClient.Rollback(); err != nil {
+				return err
+			}
+			return err
+		}
+		userClient.Commit()
+		return nil
+	}()
+
+	user, err := userClient.GetByParam(ctx, "ID", ctx.Value(ClientID).(int64))
+	if err != nil {
+		return err
+	}
+
+	if user.Balance < int(exchange.Amount) {
+		return ErrInsufficientBalance
+	}
+
+	user.Balance -= int(exchange.Amount)
+	if err := userClient.UpdateBalance(ctx, ctx.Value(ClientID).(int64), user.Balance); err != nil {
+		return err
+	}
+
+	merchant, err := merchantClient.GetByParam(ctx, "Code", exchange.Code)
+	if err != nil {
+		return ErrMerchantNotExist
+	}
+
+	exchangeModel := model.ExchangeResource{
+		UserID:     ctx.Value(ClientID).(int64),
+		MerchantID: merchant.ID,
+		Amount:     exchange.Amount,
+		Date:       time.Now().Format("02-January-2006"),
+		Status:     "SUCCESS",
+	}
+
+	if err := userClient.CreateExchange(ctx, &exchangeModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *userUsecase) GetExchanges(ctx context.Context) ([]model.ExchangeCleanResource, error) {
+	client, err := e.userRepo.NewClient(true, nil)
+	if err != nil {
+		return nil, err
+	}
+	exchanges, err := client.GetExchanges(ctx, "UserID", ctx.Value(ClientID).(int64))
+	if err != nil {
+		return nil, err
+	}
+	return exchanges, nil
 }

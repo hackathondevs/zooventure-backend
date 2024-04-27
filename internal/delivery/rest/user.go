@@ -26,6 +26,8 @@ func RegisterUserHandler(
 	router.Patch("", middleware.BearerAuth, userHandler.resetPassword)
 	router.Post("/_uploadProfilePicture", middleware.BearerAuth, userHandler.updateProfilePicture)
 	router.Delete("/_deleteProfilePicture", middleware.BearerAuth, userHandler.deleteProfilePicture)
+	router.Post("_exchange", middleware.BearerAuth, userHandler.exchange)
+	router.Get("_exchanges", middleware.BearerAuth, userHandler.getExchanges)
 }
 
 func (h *userHandler) profile(c *fiber.Ctx) error {
@@ -81,4 +83,26 @@ func (h *userHandler) deleteProfilePicture(c *fiber.Ctx) error {
 		return err
 	}
 	return c.SendStatus(fiber.StatusOK)
+}
+
+func (h *userHandler) exchange(c *fiber.Ctx) error {
+	var exchangeReq model.ExchangeRequest
+	if err := c.BodyParser(&exchangeReq); err != nil {
+		return response.NewError(fiber.StatusBadRequest, ErrRequestMalformed)
+	}
+	if err := h.validator.Struct(&exchangeReq); err != nil {
+		return err
+	}
+	if err := h.usecase.Exchange(c.Context(), exchangeReq); err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Exchange successful"})
+}
+
+func (h *userHandler) getExchanges(c *fiber.Ctx) error {
+	exchanges, err := h.usecase.GetExchanges(c.Context())
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(exchanges)
 }

@@ -44,7 +44,7 @@ func (g *GeminiAI) PredictImageAnimal(ctx context.Context, data []byte, typeFile
 		genai.Text("name : string,"),
 		genai.Text("latinName : string,"),
 		genai.Text("countryOfOrigin : string,"),
-		genai.Text("characteristics : array of string,"),
+		genai.Text("characteristics : array of string (max is 5 charater),"),
 		genai.Text("category : string (Karnivora or Omnivora or Herbivora),"),
 		genai.Text("lifespan : string,"),
 		genai.Text("funfact : string (fun fact about the animal),"),

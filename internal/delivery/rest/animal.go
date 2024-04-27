@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/mirzahilmi/hackathon/internal/delivery/middleware"
 	"github.com/mirzahilmi/hackathon/internal/model"
 	"github.com/mirzahilmi/hackathon/internal/usecase"
 )
@@ -14,7 +15,7 @@ func RegisterAnimalHandler(animalUsecase usecase.AnimalUsecaseItf, router fiber.
 	animalHandler := animalHandler{animalUsecase}
 
 	router = router.Group("/animals")
-	router.Post("/_whatIs", animalHandler.whatIs)
+	router.Post("/_whatIs", middleware.BearerAuth, animalHandler.whatIs)
 }
 
 func (h *animalHandler) whatIs(c *fiber.Ctx) error {
@@ -28,5 +29,8 @@ func (h *animalHandler) whatIs(c *fiber.Ctx) error {
 	}
 	raw.Picture = picture
 	resp, err := h.animalUsecase.PredictAnimal(c.Context(), &raw)
+	if err != nil {
+		return err
+	}
 	return c.Status(fiber.StatusOK).JSON(resp)
 }

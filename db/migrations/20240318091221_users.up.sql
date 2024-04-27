@@ -23,7 +23,8 @@ INSERT INTO Users (
     ProfilePicture,
     Active,
     Admin,
-    Premium
+    Premium,
+    Balance
 )
 VALUE (
     "otter.whopper@gmail.com", 
@@ -31,6 +32,7 @@ VALUE (
     "Otter Whopper",
     "-",
     TRUE,
+    FALSE,
     TRUE,
-    TRUE
+    10000
 );

@@ -30,9 +30,10 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 	verifRepo := repository.NewVerificationRepository(db)
+	merchantRepo := repository.NewMerchantRepository(db)
 	authUsecase := usecase.NewAuthUsecase(userRepo, verifRepo, mailer, log)
 	rest.RegisterAuthHandler(authUsecase, validator, api)
-	userUsecase := usecase.NewUserUsecase(userRepo, supabaseImg, log)
+	userUsecase := usecase.NewUserUsecase(userRepo, merchantRepo, supabaseImg, log)
 	rest.RegisterUserHandler(userUsecase, validator, api)
 	enclosureRepo := repository.NewEnclosureRepository(db)
 	animalUsecase := usecase.NewAnimalUsecase(userRepo, enclosureRepo)
