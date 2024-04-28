@@ -49,7 +49,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	if prediction == "notanimal" {
 		return model.AnimalResource{}, nil
 	}
-	animalClient, err := u.animalRepo.NewClient(true, nil)
+	animalClient, err := u.animalRepo.NewClient(false, nil)
 	if err != nil {
 		return model.AnimalResource{}, err
 	}
@@ -74,7 +74,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	if err := animalClient.MarkVisited(ctx, animal.ID, clientID); err != nil {
 		return model.AnimalResource{}, err
 	}
-	userClient, err := u.userRepo.NewClient(true, animalClient.Ext())
+	userClient, err := u.userRepo.NewClient(false, nil)
 	if err != nil {
 		return model.AnimalResource{}, err
 	}
