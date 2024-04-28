@@ -47,7 +47,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	}
 	prediction = prediction[1:]
 	if prediction == "notanimal" {
-		return model.AnimalResource{}, err
+		return model.AnimalResource{}, nil
 	}
 	animalClient, err := u.animalRepo.NewClient(true, nil)
 	if err != nil {

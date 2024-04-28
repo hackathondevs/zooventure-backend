@@ -275,7 +275,7 @@ const (
 		LIMIT 1;
 	`
 	qInsertVisitedAnimal = `
-	   INSERT INTO UserVisits (AnimalID, UserID) VALUE (?, ?)
+	   INSERT INTO UserVisits (AnimalID, UserID) VALUE (?, ?);
 	`
 	qCheckVisited = `
 	   SELECT 1
