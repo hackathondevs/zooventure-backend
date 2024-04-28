@@ -274,4 +274,12 @@ const (
 		ORDER BY Distance ASC
 		LIMIT 1;
 	`
+	qInsertVisitedAnimal = `
+	   INSERT INTO UserVisits (AnimalID, UserID) VALUE (?, ?)
+	`
+	qCheckVisited = `
+	   SELECT 1
+	   FROM UserVisits
+	   WHERE AnimalID = ? AND UserID = ?;
+	`
 )

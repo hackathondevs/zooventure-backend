@@ -25,6 +25,8 @@ type AnimalQueryerItf interface {
 	Save(ctx context.Context, animal *model.Animal) (int64, error)
 	GetAll(ctx context.Context) ([]model.Animal, error)
 	FetchTopRelated(ctx context.Context, name string, lat, long float64) (model.Animal, error)
+	MarkVisited(ctx context.Context, id, userID int64) error
+	IsVisited(ctx context.Context, id, userID int64) bool
 }
 
 type animalQueryer struct {
@@ -86,4 +88,18 @@ func (q *animalQueryer) FetchTopRelated(ctx context.Context, name string, lat, l
 		return model.Animal{}, err
 	}
 	return animal, nil
+}
+
+func (q *animalQueryer) MarkVisited(ctx context.Context, id int64, userID int64) error {
+	if _, err := q.ext.ExecContext(ctx, qInsertVisitedAnimal, id, userID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (q *animalQueryer) IsVisited(ctx context.Context, id int64, userID int64) bool {
+	if err := q.ext.QueryRowxContext(ctx, qCheckVisited, id, userID).Scan(&id); err != nil {
+		return false
+	}
+	return true
 }

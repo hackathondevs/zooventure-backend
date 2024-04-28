@@ -49,7 +49,7 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	if prediction == "notanimal" {
 		return model.AnimalResource{}, err
 	}
-	animalClient, err := u.animalRepo.NewClient(false, nil)
+	animalClient, err := u.animalRepo.NewClient(true, nil)
 	if err != nil {
 		return model.AnimalResource{}, err
 	}
@@ -64,6 +64,23 @@ func (u *animalUsecase) PredictAnimal(ctx context.Context, data *model.PredictAn
 	animalRes := animal.Resource()
 	animalRes.FunFact = funfact
 
+	clientID := ctx.Value(ClientID).(int64)
+
+	isVisited := animalClient.IsVisited(ctx, animal.ID, clientID)
+	if isVisited {
+		return animalRes, nil
+	}
+
+	if err := animalClient.MarkVisited(ctx, animal.ID, clientID); err != nil {
+		return model.AnimalResource{}, err
+	}
+	userClient, err := u.userRepo.NewClient(true, animalClient.Ext())
+	if err != nil {
+		return model.AnimalResource{}, err
+	}
+	if err := userClient.UpdateBalance(ctx, clientID, 50); err != nil {
+		return model.AnimalResource{}, err
+	}
 	return animalRes, nil
 }
 
