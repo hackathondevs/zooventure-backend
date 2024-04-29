@@ -5,8 +5,8 @@ info:
     Zooventure's OpenAPI Specification.  
     Made with <3 by BCC Nata de Coco  
     Some useful links:
-      - [Front-End Repository](https://github.com/hackfestdevs/front-end.git)
-      - [Back-End Repository](https://github.com/hackfestdevs/back-end.git)
+      - [Front-End Repository](https://github.com/hackathondevs/front-end)
+      - [Back-End Repository](https://github.com/hackathondevs/Hackfest-UC-Back-End)
   version: 1.0.0
 servers:
   - url: https://hackfest.miruza.my.id
