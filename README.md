@@ -1,3 +1,5 @@
 # Zooventure Back-End
 
-Project is still under construction 👷‍♂️ its designed and developed under 48 hours in a Hackathon 💫
+## Outcome
+We got 1st place!
+[Picture of the team holding the award](./docs/hackfest-uc-1st-place.jpg)

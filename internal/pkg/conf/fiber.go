@@ -18,7 +18,6 @@ var StartTime = time.Now()
 func NewFiber(log *logrus.Logger) *fiber.App {
 	fiber := fiber.New(fiber.Config{
 		AppName:           os.Getenv("APP_NAME"),
-		Prefork:           true,
 		BodyLimit:         50 * 1024 * 1024,
 		DisableKeepalive:  true,
 		StrictRouting:     true,
@@ -33,7 +32,6 @@ func NewFiber(log *logrus.Logger) *fiber.App {
 
 func newErrorHandler(log *logrus.Logger) fiber.ErrorHandler {
 	return func(ctx *fiber.Ctx, err error) error {
-		log.Error(err)
 		var apiErr *response.Error
 		if errors.As(err, &apiErr) {
 			return ctx.Status(apiErr.Code).JSON(fiber.Map{
@@ -62,12 +60,12 @@ func newErrorHandler(log *logrus.Logger) fiber.ErrorHandler {
 		var fiberErr *fiber.Error
 		if errors.As(err, &fiberErr) {
 			return ctx.Status(fiberErr.Code).JSON(fiber.Map{
-				"errors": fiber.Map{"message": utils.StatusMessage(fiberErr.Code)},
+				"errors": fiber.Map{"message": utils.StatusMessage(fiberErr.Code), "err": err},
 			})
 		}
 
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"errors": fiber.Map{"message": utils.StatusMessage(fiber.StatusInternalServerError)},
+			"errors": fiber.Map{"message": utils.StatusMessage(fiber.StatusInternalServerError), "err": err},
 		})
 	}
 }
